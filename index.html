@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMI: March 1979</title>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<script src="config.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #e8eaed;
+    --bg-dark: #cdd1d6;
+    --text: #1a1a1a;
+    --text-light: #4a4a4a;
+    --accent: #c47a00;
+    --accent-light: #e08f10;
+    --blue: #1a2a4a;
+    --gold: #b8960c;
+    --card-bg: #f6f7fa;
+    --shadow: rgba(0, 0, 0, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.8;
+  }
+
+  /* ===== TITLE SCREEN ===== */
+  #title-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(180deg, #0a0c10 0%, #141820 40%, #1a1e2e 100%);
+    color: #eceae4;
+  }
+
+  #title-screen h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  #title-screen .subtitle {
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--accent);
+    margin-bottom: 2rem;
+  }
+
+  #title-screen .intro-text {
+    max-width: 650px;
+    font-size: 1rem;
+    line-height: 1.9;
+    color: #b8b4a8;
+    margin-bottom: 2.5rem;
+  }
+
+  #title-screen .intro-text em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .btn-start {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 1rem 3rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-start:hover { background: var(--accent-light); }
+
+  /* ===== MAP PANEL ===== */
+  #map-panel {
+    position: relative;
+    z-index: 100;
+    display: none;
+    background: #1a1e2e;
+    border-bottom: 3px solid var(--accent);
+    overflow: hidden;
+  }
+
+  #map-panel.active { display: block; }
+
+  .map-wrapper {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 500px;
+    overflow: hidden;
+    background: #1a1e2e;
+    transition: height 0.4s ease;
+  }
+
+  #mapbox-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Mapbox marker styles */
+  .mapbox-marker {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(40, 40, 60, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+    position: relative;
+  }
+
+  .mapbox-marker.visited {
+    background: var(--blue);
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 6px rgba(26, 42, 74, 0.5);
+  }
+
+  .mapbox-marker.current {
+    background: #c47a00;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 12px rgba(196, 122, 0, 0.8), 0 0 24px rgba(196, 122, 0, 0.4);
+    animation: markerPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes markerPulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(196, 122, 0, 0.8), 0 0 24px rgba(196, 122, 0, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(196, 122, 0, 1), 0 0 40px rgba(196, 122, 0, 0.6); }
+  }
+
+  .mapbox-marker-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    white-space: nowrap;
+    text-align: center;
+    pointer-events: none;
+    transition: color 0.4s;
+  }
+
+  .mapbox-marker.visited .mapbox-marker-label,
+  .mapbox-marker.current .mapbox-marker-label {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Danger markers on Mapbox */
+  .mapbox-danger-marker {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.6s;
+    pointer-events: none;
+  }
+
+  .mapbox-danger-marker.visible {
+    opacity: 1;
+    animation: dangerPulse 1.5s ease-in-out infinite;
+  }
+
+  .mapbox-danger-marker.danger-radiation {
+    background: radial-gradient(circle, rgba(255, 200, 0, 0.9), rgba(200, 120, 0, 0.7));
+    box-shadow: 0 0 16px rgba(255, 200, 0, 0.6);
+  }
+
+  .mapbox-danger-marker.danger-meltdown {
+    background: radial-gradient(circle, rgba(255, 60, 0, 0.9), rgba(183, 28, 28, 0.7));
+    box-shadow: 0 0 16px rgba(255, 60, 0, 0.6);
+  }
+
+  .mapbox-danger-marker.danger-warning {
+    background: radial-gradient(circle, rgba(255, 180, 0, 0.9), rgba(200, 120, 0, 0.7));
+    box-shadow: 0 0 16px rgba(255, 180, 0, 0.6);
+  }
+
+  @keyframes dangerPulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(255, 180, 0, 0.6); }
+    50% { box-shadow: 0 0 24px rgba(255, 180, 0, 1), 0 0 40px rgba(255, 180, 0, 0.5); }
+  }
+
+  /* Map legend */
+  .map-legend {
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
+    display: flex;
+    gap: 16px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(0,0,0,0.6);
+    padding: 4px 10px;
+    border-radius: 3px;
+    z-index: 10;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .legend-dot.orange { background: #c47a00; }
+  .legend-dot.blue { background: var(--blue); }
+
+  /* Map location callout */
+  .map-callout {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    text-align: right;
+    z-index: 10;
+  }
+
+  .callout-location {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ffaa33;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+
+  .callout-date {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.7);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  #game-container {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+    display: none;
+  }
+
+  #game-container.active { display: block; }
+
+  .scene-location {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .scene-date {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+  }
+
+  .scene-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+  }
+
+  .scene-narrative { margin-bottom: 2rem; }
+
+  .scene-photo {
+    width: 100%;
+    margin: 1.5rem 0;
+    border: 3px solid var(--bg-dark);
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .scene-photo img {
+    width: 100%;
+    display: block;
+  }
+
+  .scene-photo figcaption {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-dark);
+    line-height: 1.4;
+    font-style: italic;
+  }
+
+  .scene-narrative p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+  }
+
+  .scene-narrative .historical-note {
+    background: var(--bg-dark);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--text-light);
+  }
+
+  .scene-narrative .vocab-term {
+    border-bottom: 1px dashed var(--accent);
+    cursor: help;
+    position: relative;
+  }
+
+  .scene-narrative .vocab-term:hover::after {
+    content: attr(data-def);
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: var(--blue);
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-style: normal;
+    border-radius: 4px;
+    width: 280px;
+    z-index: 10;
+    line-height: 1.5;
+  }
+
+  .choice-prompt {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--blue);
+  }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .choice-btn {
+    font-family: 'Source Sans Pro', sans-serif;
+    text-align: left;
+    padding: 1.1rem 1.5rem;
+    background: var(--card-bg);
+    border: 2px solid var(--bg-dark);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+
+  .choice-btn:hover {
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .choice-btn .choice-label {
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 0.5rem;
+  }
+
+  .consequence {
+    background: var(--card-bg);
+    border-left: 3px solid var(--accent);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .consequence p { margin-bottom: 0.8rem; }
+  .consequence p:last-child { margin-bottom: 0; }
+
+  .continue-btn {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.85rem 2.5rem;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: background 0.2s;
+  }
+
+  .continue-btn:hover { background: #2a3a5e; }
+
+  .nav-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .back-btn {
+    display: inline-block;
+    background: none;
+    border: 1px solid #999;
+    color: #666;
+    padding: 0.4rem 1rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .back-btn:hover {
+    background: #eee;
+    color: #333;
+    border-color: #666;
+  }
+
+  .epilogue-section { margin-bottom: 2rem; }
+
+  .epilogue-section h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    color: var(--blue);
+  }
+
+  .epilogue-section ul { padding-left: 1.5rem; }
+
+  .epilogue-section li {
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+  }
+
+  .restart-btn {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.85rem 2.5rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 1rem;
+    transition: background 0.2s;
+  }
+
+  .restart-btn:hover { background: var(--accent-light); }
+
+  /* ===== REFLECTION FORM ===== */
+  .reflection-section {
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 2px solid var(--bg-dark);
+  }
+
+  .reflection-section h2 {
+    font-size: 1.5rem;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .reflection-intro {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+
+  .reflection-field { margin-bottom: 2rem; }
+
+  .reflection-field label {
+    display: block;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .reflection-field textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.85rem 1rem;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--card-bg);
+    border: 2px solid var(--bg-dark);
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+
+  .reflection-field textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  .reflection-field textarea::placeholder {
+    color: #a09888;
+    font-style: italic;
+  }
+
+  .name-field { margin-bottom: 2rem; }
+
+  .name-field label {
+    display: block;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .name-field input {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.7rem 1rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--card-bg);
+    border: 2px solid var(--bg-dark);
+    transition: border-color 0.2s;
+  }
+
+  .name-field input:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  .name-field input::placeholder { color: #a09888; }
+
+  .reflection-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .save-pdf-btn {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.85rem 2.5rem;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: background 0.2s;
+  }
+
+  .save-pdf-btn:hover { background: #2a3a5e; }
+
+  .save-pdf-btn:disabled {
+    background: #999;
+    cursor: not-allowed;
+  }
+
+  .pdf-note {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 0.75rem;
+  }
+
+  .fade-in { animation: fadeIn 0.6s ease forwards; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== INCIDENT REPORT MODAL ===== */
+  .report-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 2rem 1rem;
+  }
+  .report-overlay.active { display: flex; justify-content: center; align-items: flex-start; }
+  .report-modal {
+    background: #f5f3ed;
+    background-image: linear-gradient(to bottom, #f5f3ed, #ebe8de);
+    max-width: 650px;
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    padding: 2.5rem 2rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    color: #1a1a1a;
+    position: relative;
+  }
+  .report-modal h2 {
+    font-family: 'Source Sans Pro', sans-serif;
+    text-align: center;
+    font-size: 1.4rem;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+  }
+  .report-modal .report-subtitle {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .report-modal .report-classification {
+    text-align: center;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    padding: 0.3rem;
+    border: 2px solid var(--accent);
+    display: inline-block;
+    width: 100%;
+  }
+  .report-modal .report-intro {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: #555;
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+  }
+  .report-modal label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    color: var(--blue);
+  }
+  .report-modal input[type="text"],
+  .report-modal textarea {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    background: #fff;
+  }
+  .report-modal textarea { min-height: 70px; resize: vertical; }
+  .report-modal .report-field { margin-bottom: 1.2rem; }
+  .report-modal .legal-text {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #777;
+    line-height: 1.5;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    background: #faf8f3;
+  }
+  .report-submit-btn {
+    display: block;
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 1.5rem;
+  }
+  .report-submit-btn:hover { background: #2a3a5e; }
+
+  /* ===== BROADCAST MODAL ===== */
+  .broadcast-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 1100;
+    padding: 1rem;
+  }
+  .broadcast-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .broadcast-modal {
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+  }
+  .broadcast-modal h2 {
+    font-family: 'Libre Baskerville', serif;
+    color: #fff;
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+  }
+  .broadcast-modal .broadcast-dateline {
+    color: var(--accent);
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .broadcast-modal p.broadcast-subtitle {
+    color: #bbb;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .broadcast-modal .broadcast-frame {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.3%;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .broadcast-modal .broadcast-frame iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .broadcast-close-btn {
+    display: inline-block;
+    margin-top: 1.2rem;
+    padding: 0.7rem 2rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .broadcast-close-btn:hover { background: var(--accent-light); }
+
+  /* ===== EVIDENCE MODAL ===== */
+  .evidence-link {
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .evidence-link:hover { color: var(--accent-light); }
+  .evidence-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1100;
+    overflow-y: auto;
+    padding: 2rem 1rem;
+  }
+  .evidence-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .evidence-modal {
+    background: #f5f3ed;
+    background-image: linear-gradient(to bottom, #f5f3ed, #ebe8de);
+    max-width: 750px;
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    padding: 2.5rem 2rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    color: #1a1a1a;
+    margin: 1rem auto;
+  }
+  .evidence-modal h2 {
+    font-family: 'Libre Baskerville', serif;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+    color: var(--accent);
+  }
+  .evidence-modal h3 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 0.3rem;
+  }
+  .evidence-modal p {
+    line-height: 1.7;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+  }
+  .evidence-close-btn {
+    display: block;
+    margin: 1.5rem auto 0;
+    padding: 0.7rem 2.5rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .evidence-close-btn:hover { background: var(--accent-light); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 700px) {
+    #title-screen h1 { font-size: 2.2rem; }
+    #title-screen .subtitle { font-size: 1rem; }
+    .map-wrapper { height: 320px; }
+    .map-callout { display: none; }
+    .map-legend { display: none; }
+    #game-container { padding: 1.5rem 1rem 3rem; }
+    .scene-title { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== TITLE SCREEN ===== -->
+<div id="title-screen">
+  <h1>Three Mile Island</h1>
+  <div class="subtitle">March 28, 1979</div>
+  <div class="intro-text">
+    At 4:00 a.m. on March 28, 1979, a series of mechanical failures and human errors triggered a partial meltdown at the Three Mile Island nuclear power plant near Harrisburg, Pennsylvania. For five days, the nation held its breath as officials struggled to understand what was happening inside a crippled reactor. Conflicting information, institutional failures, and public terror pushed America to the brink of its worst nuclear nightmare.
+    <br><br>
+    In this simulation, you are a <em>Nuclear Regulatory Commission inspector</em> dispatched to investigate the crisis. You will walk through the technical failures, make decisions about public safety, and testify before the presidential commission.
+    <br><br>
+    The reactor was real. The failures were real. The questions about nuclear power are still being asked.
+  </div>
+  <button class="btn-start" onclick="startGame()">Begin Investigation</button>
+</div>
+
+<!-- ===== AUDIO ===== -->
+<audio id="intro-audio" preload="auto"></audio>
+<div id="epilogue-audio-container" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden;pointer-events:none;"></div>
+
+<!-- ===== MAP PANEL ===== -->
+<div id="map-panel">
+  <div class="map-wrapper">
+    <div id="mapbox-container"></div>
+
+    <!-- Map callout -->
+    <div class="map-callout">
+      <div class="callout-location" id="callout-location"></div>
+      <div class="callout-date" id="callout-date"></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="map-legend">
+      <div class="legend-item">
+        <div class="legend-dot orange"></div>
+        <span>Current location</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot blue"></div>
+        <span>Investigated</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GAME CONTENT ===== -->
+<div id="game-container"></div>
+
+<script>
+// ============================================================
+// GAME STATE
+// ============================================================
+const state = {
+  currentScene: null,
+  approachChoice: null, // 'controlroom' or 'monitoring' (chosen in scene3)
+  decisions: [],
+  visitedStops: [],
+  sceneHistory: [],
+  forwardHistory: [],
+  reachedEpilogue: false,
+  report: null,
+  _pendingChoice: null
+};
+
+// ============================================================
+// MAP CONFIGURATION
+// ============================================================
+const stopOrder = ['nrc_kop', 'tmi', 'controlroom', 'middletown', 'harrisburg', 'hershey', 'tmi_return', 'washington'];
+
+const mapLocations = {
+  nrc_kop:     { lng: -75.3832, lat: 40.0879, label: "NRC Region I" },
+  tmi:         { lng: -76.7247, lat: 40.1531, label: "Three Mile Island" },
+  controlroom: { lng: -76.7260, lat: 40.1540, label: "TMI Control Room" },
+  middletown:  { lng: -76.7314, lat: 40.2001, label: "Middletown, PA" },
+  harrisburg:  { lng: -76.8844, lat: 40.2732, label: "Governor's Office" },
+  hershey:     { lng: -76.6506, lat: 40.2859, label: "Hershey, PA" },
+  tmi_return:  { lng: -76.7247, lat: 40.1531, label: "Three Mile Island" },
+  washington:  { lng: -77.0091, lat: 38.8976, label: "Washington, D.C." }
+};
+
+const dangerTriggers = {
+  tmi:         { lng: -76.7247, lat: 40.1531, type: 'danger-meltdown', icon: '\u2622' },
+  controlroom: { lng: -76.7260, lat: 40.1540, type: 'danger-radiation', icon: '\u2622' },
+  middletown:  { lng: -76.7314, lat: 40.2001, type: 'danger-warning', icon: '\u26A0' }
+};
+
+// Mapbox state
+let mapboxMap = null;
+let mapboxMarkers = {};
+let mapboxDangerMarkers = {};
+let mapboxInitialized = false;
+
+function initMapbox() {
+  if (mapboxInitialized) return;
+  mapboxInitialized = true;
+
+  mapboxgl.accessToken = window.MAPBOX_TOKEN || '';
+
+  mapboxMap = new mapboxgl.Map({
+    container: 'mapbox-container',
+    style: 'mapbox://styles/mapbox/dark-v11',
+    center: [-76.73, 40.17],
+    zoom: 10.5,
+    scrollZoom: false,
+    attributionControl: false
+  });
+
+  mapboxMap.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
+
+  mapboxMap.on('click', () => { mapboxMap.scrollZoom.enable(); });
+
+  requestAnimationFrame(() => {
+    mapboxMap.resize();
+  });
+
+  mapboxMap.on('style.load', () => {
+    // Add location markers
+    Object.entries(mapLocations).forEach(([key, loc]) => {
+      const el = document.createElement('div');
+      el.className = 'mapbox-marker';
+      el.setAttribute('data-city', key);
+
+      const label = document.createElement('div');
+      label.className = 'mapbox-marker-label';
+      label.textContent = loc.label;
+      el.appendChild(label);
+
+      const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([loc.lng, loc.lat])
+        .addTo(mapboxMap);
+
+      mapboxMarkers[key] = { marker, element: el };
+    });
+
+    // Create danger markers (hidden initially)
+    Object.entries(dangerTriggers).forEach(([key, info]) => {
+      const el = document.createElement('div');
+      el.className = `mapbox-danger-marker ${info.type}`;
+      el.textContent = info.icon;
+
+      const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([info.lng, info.lat])
+        .addTo(mapboxMap);
+
+      mapboxDangerMarkers[key] = { marker, element: el };
+    });
+
+    if (state.visitedStops.length > 0) {
+      const lastStop = state.visitedStops[state.visitedStops.length - 1];
+      updateMapboxMarkers(lastStop);
+      const loc = mapLocations[lastStop];
+      if (loc) {
+        const zoom = lastStop === 'washington' ? 12 : 12.5;
+        mapboxMap.flyTo({ center: [loc.lng, loc.lat], zoom: zoom, speed: 1.2, essential: true });
+      }
+    }
+  });
+}
+
+function updateMapboxMarkers(currentStop) {
+  Object.entries(mapboxMarkers).forEach(([key, { element }]) => {
+    element.classList.remove('visited', 'current');
+    if (state.visitedStops.includes(key) && key !== currentStop) {
+      element.classList.add('visited');
+    }
+    if (key === currentStop) {
+      element.classList.add('current');
+    }
+  });
+
+  Object.entries(dangerTriggers).forEach(([stop]) => {
+    if (state.visitedStops.includes(stop) && mapboxDangerMarkers[stop]) {
+      mapboxDangerMarkers[stop].element.classList.add('visible');
+    }
+  });
+}
+
+function updateRouteMap(currentStop, locationText, dateText) {
+  if (!currentStop) return;
+  const idx = stopOrder.indexOf(currentStop);
+  if (idx === -1) return;
+
+  if (!state.visitedStops.includes(currentStop)) {
+    state.visitedStops.push(currentStop);
+  }
+
+  if (locationText) document.getElementById('callout-location').textContent = locationText;
+  if (dateText) document.getElementById('callout-date').textContent = dateText;
+
+  if (!mapboxMap) return;
+
+  updateMapboxMarkers(currentStop);
+
+  const loc = mapLocations[currentStop];
+  if (!loc) return;
+
+  if (currentStop === 'washington') {
+    mapboxMap.flyTo({
+      center: [loc.lng, loc.lat],
+      zoom: 12,
+      speed: 0.6,
+      curve: 2,
+      essential: true
+    });
+  } else {
+    mapboxMap.flyTo({
+      center: [loc.lng, loc.lat],
+      zoom: 12.5,
+      speed: 0.8,
+      essential: true
+    });
+  }
+}
+
+// ============================================================
+// SCENE DATA
+// ============================================================
+const scenes = {
+
+// ------ SCENE 1: THE ASSIGNMENT ------
+scene1: {
+  location: "NRC Region I Office, King of Prussia, Pennsylvania",
+  date: "March 28, 1979 — 7:15 a.m.",
+  stop: "nrc_kop",
+  title: "The Call",
+  narrative: `
+    <p>You are a reactor inspector with the <span class="vocab-term" data-def="The Nuclear Regulatory Commission (NRC) is an independent agency of the U.S. federal government responsible for regulating commercial nuclear power plants and other uses of nuclear materials. It was established in 1975 as a successor to the Atomic Energy Commission.">Nuclear Regulatory Commission</span>, stationed at the Region I field office in King of Prussia, Pennsylvania. Your phone rings at 7:15 a.m.</p>
+
+    <p>It's the NRC Operations Center in Bethesda, Maryland. There has been an incident at <span class="vocab-term" data-def="Three Mile Island is a 3.3-mile-long island in the Susquehanna River near Harrisburg, Pennsylvania. The Three Mile Island Nuclear Generating Station housed two pressurized water reactors: TMI-1 (operational since 1974) and TMI-2 (operational since December 1978).">Three Mile Island</span>, a nuclear power plant located on an island in the Susquehanna River, about ten miles south of Harrisburg. TMI Unit 2 — a <span class="vocab-term" data-def="A pressurized water reactor (PWR) is a type of nuclear reactor that uses ordinary water under high pressure as both a coolant and a moderator. The water in the primary loop is heated by the reactor core, then transfers that heat to a secondary loop through a steam generator to produce electricity.">pressurized water reactor</span> that has been operational for only three months — has declared a <span class="vocab-term" data-def="A site emergency is the second-highest emergency classification at a nuclear power plant (below a general emergency). It indicates that events are in progress or have occurred that involve actual or likely major failures of plant functions needed for protection of the public.">site emergency</span>.</p>
+
+    <p>Your supervisor briefs you: <strong>"Something happened at TMI-2 around 4 a.m. The feedwater system tripped, and we're getting conflicting reports about the reactor's status. Met Ed says they have it under control. But the plant declared a site emergency at 7:00 a.m., and now they've escalated to a general emergency. That means potential for offsite radiation release."</strong></p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> Three Mile Island Unit 2 was a brand-new reactor, having achieved commercial operation on December 30, 1978 — less than three months before the accident. The plant was operated by Metropolitan Edison (Met Ed), a subsidiary of General Public Utilities. TMI-2 was a Babcock & Wilcox pressurized water reactor with a generating capacity of 880 megawatts — enough to power about 300,000 homes.
+    </div>
+
+    <p>He continues: <strong>"A general emergency has never been declared at a commercial nuclear power plant in the United States. We need people on the ground. You're the closest reactor inspector with PWR experience. Get to Three Mile Island. Find out what is actually happening inside that reactor."</strong></p>
+
+    <p>You grab your dosimeter, your inspection credentials, and your technical manuals. The drive from King of Prussia to Three Mile Island is about 90 miles — roughly two hours. On the radio, there is no mention of the accident yet. The public doesn't know.</p>
+
+    <p>As you drive west on the Pennsylvania Turnpike, you review what you know about pressurized water reactors. The system is designed with multiple layers of safety: if something goes wrong, the reactor should <span class="vocab-term" data-def="A SCRAM is the emergency shutdown of a nuclear reactor. When triggered, control rods are rapidly inserted into the reactor core to absorb neutrons and halt the nuclear chain reaction. The term may derive from the early days of the first reactor in Chicago, where a 'Safety Control Rod Axe Man' was ready to cut a rope and drop a control rod in an emergency.">SCRAM</span> automatically — inserting control rods to stop the chain reaction. Emergency cooling systems should activate. Containment should hold. That's the theory. But something at TMI has clearly gone beyond theory.</p>
+  `,
+  prompt: "How do you prepare on the drive to the plant?",
+  choices: [
+    {
+      label: "A",
+      text: "Review the technical schematics of the Babcock & Wilcox reactor design — you need to understand this specific system inside and out before you arrive.",
+      consequence: `<p>You spread your B&W reactor manuals across the passenger seat (not the safest driving, but this is an emergency). You focus on the <span class="vocab-term" data-def="The primary coolant loop is the closed system of pipes that carries water heated by the reactor core to the steam generators. In a pressurized water reactor, this water is kept under extremely high pressure (about 2,200 psi) to prevent it from boiling. If pressure drops or coolant is lost, the fuel rods can overheat and be damaged.">primary coolant system</span>, the emergency core cooling systems, and the reactor's instrumentation layout. You pay special attention to the <span class="vocab-term" data-def="The pilot-operated relief valve (PORV) is a pressure relief valve on top of the pressurizer in a PWR. It opens automatically to release steam when pressure exceeds a set point, preventing the system from over-pressurizing. It is designed to close again once pressure drops.">pilot-operated relief valve</span> — a critical safety component that relieves excess pressure from the primary system.</p>
+      <p>You also review the emergency operating procedures. You know that the biggest danger in any reactor accident is losing coolant to the core. Without coolant, the <span class="vocab-term" data-def="Fuel rods are long, thin tubes (usually made of a zirconium alloy called Zircaloy) containing pellets of uranium fuel. They are arranged in bundles within the reactor core. If they overheat due to loss of coolant, the Zircaloy cladding can react with steam to produce hydrogen gas and can eventually melt.">fuel rods</span> overheat. If they overheat enough, they melt. That's a meltdown.</p>`,
+      next: "scene2"
+    },
+    {
+      label: "B",
+      text: "Focus on emergency response protocols and the chain of command — you need to know who's in charge and how decisions get made in a crisis.",
+      consequence: `<p>You review the NRC's Incident Response Plan and the plant's emergency plan on file. In theory, the chain of command is clear: the plant's shift supervisor manages the immediate response, Met Ed's corporate office oversees the utility's response, and the NRC monitors and can intervene if public safety is at risk. The state of Pennsylvania has its own emergency management agency. The governor can order evacuations.</p>
+      <p>In practice, you know it's never that clean. In a real emergency, information is fragmentary, phone lines are jammed, and everyone is making decisions based on incomplete data. The question is always: who has the best information, and are they sharing it? You suspect the answer, in this case, might be "no one" and "not well enough."</p>`,
+      next: "scene2"
+    }
+  ]
+},
+
+// ------ SCENE 2: ARRIVAL ------
+scene2: {
+  location: "Three Mile Island, Dauphin County, Pennsylvania",
+  date: "March 28, 1979 — 9:30 a.m.",
+  stop: "tmi",
+  title: "The Island",
+  narrative: `
+    <p>You cross the bridge onto Three Mile Island and see the plant for the first time under these conditions. Four massive <span class="vocab-term" data-def="Cooling towers are large, hyperbolic (hourglass-shaped) concrete structures used to cool the water in a power plant's secondary cooling system. Despite their ominous appearance, the 'steam' rising from them is simply water vapor — not radiation. TMI had four cooling towers, two for each unit.">cooling towers</span> dominate the landscape, two for each of the plant's two units. A plume of steam rises from the towers of Unit 1, which is operating normally. Unit 2's towers are quiet. That's your first clue that something is seriously wrong — Unit 2 is not generating power.</p>
+
+    <p>The plant entrance is already chaotic. Met Ed employees, state police, and other NRC inspectors are arriving. Radiation monitoring teams are setting up equipment around the plant perimeter. You flash your NRC credentials and are directed to the Unit 2 observation center.</p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> By the time NRC inspectors began arriving at TMI on the morning of March 28, the accident had already been underway for over five hours. The initial event — a loss of feedwater to the steam generators — had occurred at 4:00 a.m. The reactor had automatically scrammed (shut down), but a stuck-open relief valve had been draining coolant from the reactor for over two hours before operators recognized the problem. By the time the valve was closed, significant damage to the reactor core had already occurred.
+    </div>
+
+    <p>A Met Ed site manager meets you at the door. He looks exhausted. <strong>"We had a feedwater transient at 4 a.m. The reactor tripped. The PORV opened to relieve pressure, but we think it may have stuck open. We've been dealing with high radiation readings in the containment building. We've got the situation stabilized now."</strong></p>
+
+    <p>You note his language carefully. "Think it may have stuck open." "Stabilized now." You've been in this business long enough to know that confident language from plant operators in the middle of a crisis doesn't always match reality.</p>
+
+    <p>A fellow NRC inspector pulls you aside. <strong>"Don't take their word for it. The readings I'm seeing don't match what they're telling us. The containment building radiation levels are way too high for a simple feedwater transient. Something happened to the core."</strong></p>
+
+    <p>You need to see the control room for yourself.</p>
+  `,
+  prompt: null,
+  choices: [],
+  auto_next: "scene3"
+},
+
+// ------ SCENE 3: THE CONTROL ROOM ------
+scene3: {
+  location: "TMI Unit 2 Control Room",
+  date: "March 28, 1979 — 10:00 a.m.",
+  stop: "controlroom",
+  title: "The Control Room",
+  narrative: `
+    <p>You enter the Unit 2 control room. It is a scene of controlled chaos. Dozens of people are crowded into a space designed for a handful of operators — shift supervisors, Met Ed engineers, NRC staff, and Babcock & Wilcox technical representatives. Alarm panels that normally show a few indicator lights are lit up like Christmas trees. Over 100 alarms are sounding simultaneously. The operators look shell-shocked.</p>
+
+    <p>You begin piecing together what happened.</p>
+
+    <p>At 4:00 a.m., the <span class="vocab-term" data-def="The feedwater system supplies water to the steam generators, which transfer heat from the reactor's primary coolant loop to the secondary loop to make steam and generate electricity. Without feedwater, the steam generators dry out and can no longer remove heat from the primary system, causing pressure and temperature to rise.">feedwater pumps</span> in the secondary cooling system tripped — they stopped working. Without feedwater, the steam generators could no longer remove heat from the primary system. Pressure in the primary system began to rise rapidly.</p>
+
+    <p>The reactor automatically scrammed — control rods inserted, halting the nuclear chain reaction. But even after a scram, the fuel still produces enormous <span class="vocab-term" data-def="Decay heat is the heat produced by the radioactive decay of fission products in nuclear fuel after the reactor has been shut down. Even after the chain reaction stops, the fuel continues to produce about 6% of its full-power heat output, declining over hours and days. This heat MUST be removed by the cooling system, or the fuel will overheat.">decay heat</span> — about 6% of full power, or roughly 50 megawatts of thermal energy. That heat must be removed by the cooling system, or the fuel will overheat.</p>
+
+    <p>As pressure rose, the <span class="vocab-term" data-def="The pilot-operated relief valve (PORV) sits on top of the pressurizer — a tall, cylindrical vessel that maintains the correct pressure in the primary coolant system. The PORV opens automatically when pressure exceeds approximately 2,255 psi, venting steam to relieve pressure. It should close again when pressure drops below the set point.">PORV</span> on top of the pressurizer opened automatically, venting steam to relieve the pressure. That was correct — exactly what it's designed to do. But when the pressure dropped below the set point, <strong>the PORV failed to close</strong>.</p>
+
+    <p>A stuck-open PORV meant that reactor coolant was now streaming out through the valve, through the drain pipes, and into the <span class="vocab-term" data-def="The reactor coolant drain tank collects any water or steam discharged from the PORV and other relief valves. During the TMI accident, so much coolant poured into this tank that it overflowed, spilling hundreds of thousands of gallons of highly radioactive water onto the floor of the containment building.">reactor coolant drain tank</span> in the containment building. The reactor's primary system was bleeding out — a <span class="vocab-term" data-def="A Loss of Coolant Accident (LOCA) occurs when the reactor's primary coolant system loses water, either through a pipe break or, as at TMI, through a stuck-open valve. Without sufficient coolant, the reactor core can overheat, leading to fuel damage and potentially a meltdown.">loss of coolant accident</span>.</p>
+
+    <p>Here is where the human error compounded the mechanical failure:</p>
+
+    <p>The operators did not know the PORV was stuck open. The control panel had an indicator light showing that the <em>signal</em> to close the valve had been sent — but there was no instrument showing whether the valve had actually closed. The operators saw the "valve closed" signal and believed the valve was closed. <strong>It wasn't.</strong></p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> The lack of a direct position indicator for the PORV was a known design issue. Other nuclear plants with the same Babcock & Wilcox design had experienced PORV problems. In September 1977, a similar event had occurred at the Davis-Besse plant in Ohio — a stuck PORV during a feedwater transient. The lessons from Davis-Besse were documented in an internal B&W memorandum, but that information was never effectively communicated to TMI's operators. If it had been, the operators might have recognized the stuck PORV immediately, and the accident might never have progressed beyond the first few minutes.
+    </div>
+
+    <p>Worse still, when the <span class="vocab-term" data-def="The Emergency Core Cooling System (ECCS) automatically injects borated water into the reactor core when pressure drops below a certain level, providing emergency cooling to prevent core damage. At TMI, the high-pressure injection system activated as designed, but the operators — misreading their instruments — turned it down.">emergency core cooling system</span> activated and began pumping water into the primary system, the operators saw the pressurizer water level rising and concluded the system was "going solid" — filling completely with water. Believing they were about to over-fill the system (which could cause other problems), they <strong>reduced the emergency cooling water flow</strong>.</p>
+
+    <p>They were wrong. The pressurizer level was rising because the water in the primary system was boiling — turning to steam and being pushed up into the pressurizer. The core itself was being uncovered. Fuel rods were exposed to steam instead of water. Temperatures soared past 4,000 degrees Fahrenheit. The <span class="vocab-term" data-def="Zircaloy is a zirconium alloy used as cladding for nuclear fuel rods. At normal operating temperatures it is highly corrosion-resistant. But above about 2,200°F, Zircaloy reacts chemically with steam in an exothermic reaction that produces hydrogen gas and generates additional heat, accelerating fuel damage.">zircaloy cladding</span> on the fuel rods began reacting with steam, producing hydrogen gas. Fuel pellets began to crack, crumble, and melt.</p>
+
+    <p>By the time operators recognized the stuck PORV at approximately 6:22 a.m. — <strong>two hours and twenty-two minutes after the accident began</strong> — and closed a backup valve to stop the coolant loss, severe damage to the reactor core had already occurred.</p>
+
+    <p>You stand in the control room looking at the instruments. You understand now: this is not a feedwater transient. This is a partial <span class="vocab-term" data-def="A meltdown occurs when nuclear fuel overheats to the point that the fuel rods are damaged or melt. In a partial meltdown like TMI, some of the fuel melted and slumped to the bottom of the reactor vessel, but the vessel itself maintained its integrity. A full meltdown — where molten fuel breaches the reactor vessel — did not occur at TMI.">core meltdown</span>. And no one — not Met Ed, not the NRC, not the state of Pennsylvania — fully understands yet how bad it is.</p>
+  `,
+  prompt: "What do you focus on first?",
+  choices: [
+    {
+      label: "A",
+      text: "Focus on the reactor's current status — what is the core temperature, what is the coolant level, and is the situation actually stable right now?",
+      consequence: `<p>You push through the crowd to the main instrument panels. The readings are deeply troubling. Core exit thermocouples — temperature sensors above the fuel — are reading well above normal. Some are off-scale. The reactor coolant system pressure is low and unstable. Radiation monitors inside the containment building are reading levels thousands of times above normal.</p>
+      <p>You ask the shift supervisor directly: "Has the core been uncovered?" He hesitates. "We're not sure. The instruments aren't giving us clear readings. We think we've re-established cooling, but we're seeing some temperatures that concern us."</p>
+      <p>"Concern you" is an understatement. You begin drafting a preliminary assessment for NRC headquarters. The core has been damaged. The question is how badly — and whether the situation is truly stable or still deteriorating.</p>`,
+      next: "scene4",
+      effect: () => { state.approachChoice = 'controlroom'; }
+    },
+    {
+      label: "B",
+      text: "Focus on radiation releases — is radiation escaping the containment building, and is the public at risk right now?",
+      consequence: `<p>You leave the control room and find the radiation protection team. They're taking readings around the plant and on the island's perimeter. The news is alarming: radiation levels inside the containment building are extremely high — the building is doing its job containing it. But there have been releases.</p>
+      <p>When the reactor coolant drain tank overflowed, radioactive water spilled into the <span class="vocab-term" data-def="The auxiliary building at a nuclear plant houses support systems including water treatment, ventilation, and waste processing equipment. It is not as heavily shielded as the containment building. At TMI, highly radioactive water from the overflowing drain tank was pumped into the auxiliary building, where some radioactive gases escaped through the ventilation system.">auxiliary building</span>. Radioactive gases — primarily <span class="vocab-term" data-def="Radioactive noble gases (xenon-133, krypton-85) are fission products produced in nuclear fuel. When fuel is damaged, these gases escape from the fuel rods into the coolant. They are inert and do not react chemically, but they are radioactive and can deliver radiation doses if inhaled or if present in high concentrations.">xenon and krypton</span> — have been venting from the auxiliary building into the atmosphere. The amounts are being debated, but radiation has left the plant.</p>
+      <p>You call NRC headquarters. "We have confirmed offsite releases. Levels are being measured. I cannot yet tell you how much fuel damage has occurred, but this is beyond a minor incident."</p>`,
+      next: "scene4",
+      effect: () => { state.approachChoice = 'monitoring'; }
+    }
+  ]
+},
+
+// ------ SCENE 4: CONFLICTING INFORMATION ------
+scene4: {
+  location: null,
+  date: "March 28–29, 1979",
+  stop: "middletown",
+  get title() {
+    return "Conflicting Signals";
+  },
+  get narrative() {
+    return state.approachChoice === 'controlroom' ? this._controlroomNarrative : this._monitoringNarrative;
+  },
+  get location() {
+    return "Three Mile Island / Middletown, Pennsylvania";
+  },
+  _controlroomNarrative: `
+    <p>By the afternoon of March 28, the crisis at TMI has become a national story. News crews are arriving in Middletown and Harrisburg. But the information flowing to the public is confused, contradictory, and often wrong.</p>
+
+    <p>Met Ed holds a press conference. The company's spokesperson tells reporters: <strong>"There was a small release of radiation to the environment. Everything is under control. There is no danger to public health and safety."</strong></p>
+
+    <p>You know this is, at best, an oversimplification. The core has been severely damaged. Radiation has been released. The situation is not "under control" — it is being managed, hour by hour, with significant uncertainty about the core's condition.</p>
+
+    <p>Meanwhile, the NRC's own communications are muddled. Different NRC officials are giving different assessments to the press. The NRC Operations Center in Bethesda is getting information from the plant with a significant time lag. State officials are calling the NRC for answers and getting conflicting information depending on who they talk to.</p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> The information chaos during the TMI crisis was one of its most damaging aspects. Met Ed consistently downplayed the severity of the accident. The NRC had difficulty getting accurate information from the plant. The state of Pennsylvania was caught between Met Ed's reassurances and the NRC's uncertainty. Lieutenant Governor William Scranton initially told the press there was no danger, based on Met Ed's assurances — then had to retract his statement hours later when he learned the situation was more serious. This pattern of conflicting information would define the entire crisis and shatter public trust.
+    </div>
+
+    <p>Governor Richard Thornburgh calls the NRC directly. He needs to know: should he order an evacuation? The people of Middletown, Harrisburg, and the surrounding communities are watching the news and beginning to panic. Parents are calling schools. Some families are already leaving on their own.</p>
+
+    <p>At the NRC, the answer is: <strong>we don't know yet</strong>. The technical staff is still trying to determine the extent of core damage and whether radioactive releases will increase. The instruments inside the reactor aren't giving clear readings. The plant staff seems overwhelmed.</p>
+
+    <p>Then, on the morning of March 29, a new and terrifying development: monitoring instruments inside the reactor vessel detect what appears to be a large <span class="vocab-term" data-def="During the TMI accident, the chemical reaction between the overheated Zircaloy fuel rod cladding and steam produced large quantities of hydrogen gas. This hydrogen collected in a bubble at the top of the reactor vessel. The fear was that if oxygen mixed with the hydrogen, it could ignite or even explode — potentially breaching the reactor vessel and the containment building, releasing massive amounts of radiation.">hydrogen bubble</span> at the top of the reactor vessel.</p>
+
+    <p>The word spreads through the NRC and the plant staff like a shockwave. Hydrogen. Inside the reactor vessel. If that hydrogen ignites or explodes, it could breach the reactor vessel. It could breach the containment building. It could release the full inventory of radioactive material into the atmosphere.</p>
+  `,
+  _monitoringNarrative: `
+    <p>Your radiation monitoring work confirms what you feared: this is not a minor event. Over the course of March 28, radioactive gases continue to vent from the auxiliary building. Monitoring teams around the plant's perimeter detect elevated radiation levels. Readings are inconsistent — the wind shifts, the releases are intermittent, and different monitoring stations report different numbers.</p>
+
+    <p>The public information situation is disastrous. Met Ed tells the press everything is under control. But reporters are picking up on the conflicting signals: state officials who initially echoed Met Ed's reassurances are now backtracking. Lieutenant Governor William Scranton told the press in the morning that there was no danger — then, after learning the situation was more serious, had to reverse his statement in the afternoon.</p>
+
+    <p><strong>"This situation is more complex than the utility has led us to believe,"</strong> Scranton tells reporters. The reversal is devastating. If the government's own officials can't agree on what's happening, how is the public supposed to feel safe?</p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> The radiation releases from TMI were a subject of intense debate during and after the crisis. The official estimates concluded that the total radiation released was about 15 curies of iodine-131, with an average dose to people living within a 10-mile radius of about 8 millirem — less than a chest X-ray. However, critics argued that monitoring was inadequate (many monitors were not functioning or were positioned incorrectly), that releases may have been higher than officially reported, and that the health effects of low-level radiation exposure were (and remain) scientifically contested.
+    </div>
+
+    <p>Governor Richard Thornburgh is in an impossible position. He needs to decide whether to order an evacuation of the communities surrounding TMI. An unnecessary evacuation could cause panic, injuries, and economic devastation. A failure to evacuate, if conditions worsen, could expose hundreds of thousands of people to dangerous radiation. He turns to the NRC for guidance. The NRC tells him: <strong>we're still assessing</strong>.</p>
+
+    <p>Then, on the morning of March 29, the crisis escalates dramatically. Instruments detect a large <span class="vocab-term" data-def="During the TMI accident, the chemical reaction between the overheated Zircaloy fuel rod cladding and steam produced large quantities of hydrogen gas. This hydrogen collected in a bubble at the top of the reactor vessel. The fear was that if oxygen mixed with the hydrogen, it could ignite or even explode — potentially breaching the reactor vessel and the containment building, releasing massive amounts of radiation.">hydrogen bubble</span> inside the reactor vessel — a pocket of hydrogen gas sitting at the top of the vessel, directly above the damaged core.</p>
+
+    <p>The word "hydrogen" sends a chill through everyone who understands nuclear engineering. Hydrogen is explosive. If it mixes with oxygen and ignites, the consequences could be catastrophic.</p>
+  `,
+  prompt: "The governor is asking the NRC for a recommendation. What do you advise?",
+  choices: [
+    {
+      label: "A",
+      text: "\"We should recommend precautionary evacuation now, before the situation gets worse. We don't fully understand the hydrogen bubble, and we can't guarantee it won't ignite.\"",
+      consequence: `<p>Your supervisor listens carefully. "A full evacuation of the area around TMI would affect hundreds of thousands of people. The logistics alone — schools, hospitals, nursing homes, prisons — are staggering. If we're wrong, if the bubble isn't a threat, we've caused massive disruption and potentially undermined public confidence in nuclear power for a generation."</p>
+      <p>"And if we're right?" you ask.</p>
+      <p>He pauses. "That's the question, isn't it."</p>
+      <p>In the end, the NRC does not recommend a full evacuation. But Governor Thornburgh, acting on advice from NRC Chairman Joseph Hendrie, issues an advisory on March 30: pregnant women and preschool-age children within five miles of the plant should leave the area. It is a compromise — not a full evacuation, but an acknowledgment that the situation is serious enough to warrant protective action.</p>`,
+      next: "scene5"
+    },
+    {
+      label: "B",
+      text: "\"We don't have enough data to recommend a full evacuation. We should advise sheltering in place while we get better readings on the hydrogen bubble. An unnecessary evacuation could cause more harm than the radiation.\"",
+      consequence: `<p>Your argument is technically sound. The radiation levels measured offsite, so far, have been low. The containment building is intact. A mass evacuation carries its own risks: traffic accidents, people with medical conditions losing access to care, economic chaos. And an evacuation based on uncertain information could be seen as a panicked overreaction that permanently destroys public confidence in nuclear power.</p>
+      <p>But the counterargument is powerful: the hydrogen bubble is an unknown. If it ignites, there may not be time to evacuate. The precautionary principle says you protect people first and assess later.</p>
+      <p>Governor Thornburgh splits the difference. On March 30, he advises pregnant women and preschool-age children within five miles of the plant to evacuate. It's not a full evacuation order, but it signals to the public that the government is taking the threat seriously.</p>`,
+      next: "scene5"
+    }
+  ]
+},
+
+// ------ SCENE 5: THE HYDROGEN BUBBLE ------
+scene5: {
+  location: "Three Mile Island / Governor's Office, Harrisburg",
+  date: "March 30, 1979",
+  stop: "harrisburg",
+  title: "The Hydrogen Bubble",
+  narrative: `
+    <p>March 30, 1979 is the day the Three Mile Island crisis nearly becomes a full-blown disaster — not because of what happens at the reactor, but because of what people think is about to happen.</p>
+
+    <p>NRC Chairman <strong>Joseph Hendrie</strong> and Governor <strong>Richard Thornburgh</strong> are on the phone, trying to coordinate a response. The conversation, later released as part of the investigation, reveals just how lost both men are:</p>
+
+    <p><strong>Hendrie:</strong> <em>"We are operating almost totally in the blind. [Governor Thornburgh's] information is ambiguous. Mine is nonexistent. And — I don't know — it's like a couple of blind men staggering around making decisions."</em></p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> The "blind men" quote became one of the most famous lines of the TMI crisis. It captured the fundamental problem: the chairman of the agency responsible for regulating nuclear power and the governor responsible for protecting his citizens were both making critical public safety decisions without reliable information. The NRC could not get consistent data from the plant. The plant's instruments were damaged or unreliable. And the technical experts were themselves uncertain about what was happening inside the sealed reactor vessel.
+    </div>
+
+    <p>The hydrogen bubble dominates the crisis. NRC staff in Bethesda calculate that the bubble contains approximately 1,000 cubic feet of hydrogen gas. The terrifying question is: could oxygen accumulate in the reactor vessel and mix with the hydrogen to create an explosive mixture?</p>
+
+    <p>Some NRC engineers believe the risk is real. If the hydrogen detonates, it could blow the top off the reactor vessel. If the reactor vessel is breached, it could rupture the containment building. And if containment fails, the full radioactive inventory of a damaged nuclear core — <span class="vocab-term" data-def="The radioactive inventory of a nuclear reactor core includes hundreds of different radioactive isotopes (fission products and activation products) produced during operation. At TMI, the most concerning included iodine-131, cesium-137, strontium-90, and radioactive noble gases. A full release would have contaminated a large area and potentially caused widespread health effects.">cesium-137, iodine-131, strontium-90</span> — could be released into the atmosphere over a region containing nearly a million people.</p>
+
+    <p>Other engineers argue that the conditions inside the reactor vessel cannot produce enough free oxygen for an explosion. The water chemistry makes it virtually impossible. They are correct — but in the heat of the crisis, certainty is in short supply.</p>
+
+    <p>The media seizes on the hydrogen bubble story. Headlines scream about a potential nuclear explosion. Some reports conflate a hydrogen explosion (a chemical reaction) with a nuclear explosion (a completely different and physically impossible scenario for a commercial reactor), further confusing the public. The movie <em>The China Syndrome</em>, a thriller about a nuclear plant accident, had been released in theaters just twelve days before the TMI accident. Fiction and reality are blurring.</p>
+
+    <p>Governor Thornburgh's advisory triggers a voluntary mass exodus. Over the next few days, an estimated <strong>140,000 people</strong> flee the area around Three Mile Island. Roads are jammed. Hotels within a hundred-mile radius fill up. Schools close. The Hershey sports arena, 15 miles away, is designated as an evacuation center.</p>
+
+    <p>You watch families loading cars with everything they can carry. Some are crying. Some are angry. An elderly man at a gas station in Middletown tells a reporter: <strong>"They told us it was safe. They always tell us it's safe. Now look."</strong></p>
+  `,
+  prompt: "As an NRC inspector on the ground, how do you focus your efforts during the evacuation?",
+  choices: [
+    {
+      label: "A",
+      text: "Focus on the technical problem — work with the engineering teams to understand the hydrogen bubble and determine if it's actually dangerous.",
+      consequence: `<p>You spend the next 48 hours in intense technical consultations with NRC engineers, Babcock & Wilcox specialists, and academic nuclear physicists who have been called in to help. You work through the chemistry: in the high-radiation environment inside the reactor vessel, water molecules are being broken apart by radiation (<span class="vocab-term" data-def="Radiolysis is the decomposition of water molecules by ionizing radiation, producing hydrogen gas and oxygen. In the high-radiation environment of a damaged reactor core, radiolysis produces both gases. The question at TMI was whether enough free oxygen was being produced to create an explosive mixture with the hydrogen bubble.">radiolysis</span>), producing both hydrogen and oxygen. But the key question is whether the oxygen can accumulate as a free gas or whether it recombines with hydrogen in the water.</p>
+      <p>After extensive calculations, the consensus emerges: the conditions inside the reactor vessel cannot produce a flammable mixture. The oxygen produced by radiolysis recombines in the water before it can accumulate as a free gas. The hydrogen bubble, while real, is not an explosion risk. The crisis, from a technical standpoint, is being contained.</p>
+      <p>But this information takes days to reach certainty — days during which 140,000 people have already fled their homes.</p>`,
+      next: "scene6"
+    },
+    {
+      label: "B",
+      text: "Focus on public communication — the information reaching citizens is dangerously wrong, and someone needs to correct it before panic causes its own catastrophe.",
+      consequence: `<p>You push for clearer, more honest communication from the NRC and the state. But it's like trying to redirect a river. Met Ed continues to minimize. The NRC continues to send mixed signals — different officials giving different assessments. The media, unable to get consistent information from official sources, fills the vacuum with worst-case speculation.</p>
+      <p>You draft a clear, factual briefing for the NRC press office: here is what we know, here is what we don't know, here is what the risks are. Your supervisor reviews it and softens the language. "We can't say 'core damage' to the public — that sounds like a meltdown." You argue that it <em>was</em> a partial meltdown, but you're overruled. The NRC's public statements remain carefully hedged.</p>
+      <p>Meanwhile, the people of central Pennsylvania are making their own decisions. They don't trust Met Ed. They don't trust the NRC. They don't trust the governor. They load their cars and leave.</p>`,
+      next: "scene6"
+    }
+  ]
+},
+
+// ------ SCENE 6: THE PRESIDENT VISITS ------
+scene6: {
+  location: "Three Mile Island, Pennsylvania",
+  date: "April 1, 1979",
+  stop: "hershey",
+  title: "The President Arrives",
+  narrative: `
+    <p>On April 1, 1979 — four days into the crisis — President <strong>Jimmy Carter</strong> arrives at Three Mile Island. Carter, a former Navy nuclear engineer who had studied under Admiral Hyman Rickover, is one of the few political leaders in the country who actually understands nuclear reactor technology. He has come to see the situation for himself and to reassure the public.</p>
+
+    <p>The president, accompanied by First Lady Rosalynn Carter, tours the TMI control room. He is briefed by plant operators and NRC officials. He wears yellow rubber booties over his shoes as a radiation precaution. Photographs of the visit are broadcast worldwide.</p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> President Carter's visit was a calculated risk. If conditions at the plant worsened during his visit, it would have been a political and public safety catastrophe. But Carter believed his presence would send a powerful signal. His background in nuclear engineering — he had helped clean up a partial meltdown at a Canadian reactor (NRX at Chalk River) in 1952 while serving in the Navy — gave him a technical understanding that few other officials possessed. After his visit, public panic began to subside. The "blind leading the blind" phase of the crisis was ending.
+    </div>
+
+    <p>Over the following days, the hydrogen bubble gradually dissipates. The feared explosion never materializes. Engineers establish stable cooling of the damaged core. Radiation releases remain low. By April 9, the crisis is effectively over. Governor Thornburgh lifts the evacuation advisory.</p>
+
+    <p>The evacuees begin returning home. The immediate emergency has passed. But the questions are just beginning.</p>
+
+    <p><strong>What exactly happened inside the reactor?</strong> No one can look inside the sealed vessel. It will take years and remotely operated cameras before the full extent of the damage is known. (When they finally look inside in 1985, they will discover that approximately <strong>half the core — about 62 tons of fuel — had melted</strong>. The damage was far worse than anyone estimated during the crisis. Molten fuel had pooled at the bottom of the reactor vessel, coming within an hour of breaching it.)</p>
+
+    <p><strong>How much radiation was released?</strong> The official estimates say very little — average doses to nearby residents equivalent to a fraction of a chest X-ray. But critics question the monitoring data and argue the releases may have been higher.</p>
+
+    <p><strong>Who is responsible?</strong> Met Ed, for operating the plant and downplaying the crisis? Babcock & Wilcox, for designing a system with a critical instrumentation gap? The NRC, for failing to enforce lessons from the Davis-Besse incident? The operators, for misreading their instruments? All of them? None of them?</p>
+  `,
+  prompt: null,
+  choices: [],
+  auto_next: "scene7"
+},
+
+// ------ SCENE 7: THE INVESTIGATION BEGINS ------
+scene7: {
+  location: "Three Mile Island / Washington, D.C.",
+  date: "April – October, 1979",
+  stop: "tmi_return",
+  title: "The Investigation Begins",
+  narrative: `
+    <p>In the weeks following the crisis, President Carter establishes the <span class="vocab-term" data-def="The President's Commission on the Accident at Three Mile Island, commonly known as the Kemeny Commission after its chairman, John G. Kemeny, president of Dartmouth College. Established by Executive Order 12130 on April 11, 1979, the 12-member commission was tasked with conducting a comprehensive investigation of the accident and making recommendations to prevent future incidents.">Kemeny Commission</span> to investigate the accident. Chaired by John G. Kemeny, president of Dartmouth College, the 12-member commission includes scientists, engineers, environmentalists, and community representatives. A separate NRC investigation, the Rogovin Report, is also launched.</p>
+
+    <p>As an NRC inspector who was on the ground during the crisis, you are deeply involved in the investigation. The work is painstaking: reconstructing the accident minute by minute, interviewing operators, reviewing instrument data, examining the design of the reactor and its safety systems.</p>
+
+    <p>The picture that emerges is damning — and it goes far beyond a single stuck valve.</p>
+
+    <p><strong>The mechanical failure:</strong> The PORV stuck open. This was the initiating event that turned a manageable feedwater transient into a loss-of-coolant accident. But the PORV had a history of problems. It had leaked before. And the control room indicator only showed the signal sent to the valve, not the valve's actual position — a design flaw that left operators blind to the true state of the system.</p>
+
+    <p><strong>The human error:</strong> Operators misdiagnosed the situation for over two hours. They were trained to focus on pressurizer water level as the primary indicator of primary system conditions — but in this scenario, a rising pressurizer level actually indicated a loss of coolant, not an excess. Their training had not prepared them for this counterintuitive situation. When the emergency cooling system activated, they reduced its flow — the worst possible decision.</p>
+
+    <p><strong>The training failure:</strong> TMI operators were trained on normal operations and a few specific emergency scenarios. They were not trained on the actual physics of what happens during a loss of coolant accident. They did not understand the relationship between pressurizer level and actual core conditions during a small-break LOCA. A B&W engineer had written an internal memo in 1978 warning that operators could misdiagnose exactly this scenario. The memo never reached TMI's operators.</p>
+
+    <p><strong>The regulatory failure:</strong> The NRC had known about the Davis-Besse incident in 1977 — a nearly identical PORV failure. The lessons were documented but never translated into requirements for other plants with the same design. The NRC's own inspection process had not identified the instrumentation gap. The agency had, in effect, failed at its core mission: ensuring that known safety problems were corrected before they caused harm.</p>
+
+    <p><strong>The communication failure:</strong> During the crisis, information flow between Met Ed, the NRC, the state of Pennsylvania, and the public was chaotic, contradictory, and dangerously slow. Met Ed consistently minimized the severity of the accident. The NRC could not get reliable data from the plant. State officials were caught between reassurances from the utility and alarms from the NRC. The public, unable to get straight answers from anyone, panicked.</p>
+  `,
+  prompt: "As the investigation progresses, which aspect do you believe the commission should emphasize most?",
+  choices: [
+    {
+      label: "A",
+      text: "The human and organizational failures — the operators' errors, the training gaps, and the failure to learn from Davis-Besse. The technology worked as well as humans allowed it to.",
+      consequence: `<p>This becomes the Kemeny Commission's primary focus. The commission concludes that the fundamental problems were human, institutional, and regulatory — not merely technological. The operators were inadequately trained. The NRC was a complacent regulator. The utility prioritized cost and schedule over safety culture. And the system for communicating safety-critical information between manufacturers, regulators, and operators was broken.</p>
+      <p>"The equipment was sufficient to have prevented the accident," the commission's report will state. The technology failed not because it was inadequate, but because the humans who designed, operated, and regulated it failed to use it properly.</p>`,
+      next: "scene8"
+    },
+    {
+      label: "B",
+      text: "The design and engineering failures — the missing valve indicator, the misleading instruments, the inadequate emergency procedures. Better technology would have prevented the operators' errors.",
+      consequence: `<p>There is strong evidence for this view. If the control room had had a direct indicator showing the PORV's actual position, the operators would have seen immediately that it was stuck open. If the instruments had clearly shown core temperature and coolant level instead of the misleading pressurizer level, the operators would not have reduced emergency cooling. Good design should make human error difficult, not inevitable.</p>
+      <p>The Kemeny Commission ultimately takes a broader view: the design failures are real, but they are symptoms of a deeper problem — an entire industry and regulatory system that had become complacent about safety. "We are convinced that if the only problems were equipment problems," the commission writes, "this Presidential Commission would never have been created."</p>`,
+      next: "scene8"
+    },
+    {
+      label: "C",
+      text: "The communication and public trust failures — the lies, the confusion, the inability of any institution to give the public straight answers during the crisis.",
+      consequence: `<p>This is, in many ways, the most lasting damage from TMI. The radiation releases were small. No one died. But the institutional failure to communicate honestly during the crisis inflicted wounds that never healed.</p>
+      <p>Met Ed lied. The NRC contradicted itself. The state reversed its own statements. The public concluded, reasonably, that none of these institutions could be trusted. The Kemeny Commission devotes significant attention to the communication failures, concluding that the public's right to accurate information during a nuclear emergency had been violated by every institution involved.</p>
+      <p>"We found a total breakdown in communications," the commission will report. The result: a fundamental and permanent erosion of public trust in the nuclear industry and its regulators.</p>`,
+      next: "scene8"
+    }
+  ]
+},
+
+// ------ SCENE 8: THE KEMENY COMMISSION ------
+scene8: {
+  location: "Washington, D.C.",
+  date: "October 1979",
+  stop: "washington",
+  title: "The Kemeny Commission",
+  narrative: `
+    <p>You are called to testify before the Kemeny Commission in Washington. The hearing room is formal, quiet. Commission chairman John Kemeny presides. The commission's staff counsel asks you to describe, in precise detail, what you observed when you arrived at Three Mile Island on March 28 and the days that followed.</p>
+
+    <p>You testify about the control room chaos, the conflicting information, the operators' confusion, the hydrogen bubble fear, the radiation monitoring challenges. You answer every question as precisely as you can.</p>
+
+    <p>Over the course of six months, the commission interviews over 150 witnesses, reviews thousands of documents, and commissions independent technical analyses. The picture is comprehensive — and deeply troubling.</p>
+
+    <p>The commission's key findings are emerging:</p>
+
+    <p>The accident was caused by a <strong>combination of equipment failure, design deficiencies, and operator error</strong>, compounded by <strong>inadequate training, poor emergency procedures, and a complacent regulatory system</strong> that failed to learn from previous incidents.</p>
+
+    <p>But the commission goes further. The deeper problem, they conclude, is not any single failure — it is the <strong>"mindset"</strong> of the entire nuclear enterprise. The NRC, the utilities, and the reactor manufacturers had all operated on the assumption that a serious accident was so unlikely it didn't need to be seriously planned for. This assumption — that the technology was inherently safe — led to complacency at every level.</p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> The Kemeny Commission's most important conclusion was arguably its broadest: "The fundamental problems are people-related problems and not equipment problems." The commission found that the NRC was so focused on licensing new plants and writing regulations that it had lost sight of its primary mission — ensuring the safety of operating plants. It recommended a fundamental restructuring of the NRC and a transformation of the nuclear industry's "safety culture" — a term that would become central to nuclear regulation worldwide.
+    </div>
+
+    <p>During a private session, a senior commission staff member asks for your overall assessment of what went wrong and what should change.</p>
+  `,
+  prompt: "Based on everything you've investigated, what do you tell the commission?",
+  choices: [
+    {
+      label: "A",
+      text: "\"The equipment failures were real, but the deeper failure was human and institutional. The operators weren't trained for this scenario. The NRC didn't enforce the lessons from Davis-Besse. Met Ed didn't maintain a safety culture. Every institution in the chain failed.\"",
+      consequence: `<p>The staff counsel nods. "Your assessment is consistent with what the commission has been finding." He pauses. "The commission's report will call for fundamental changes — not just in equipment and procedures, but in the way the entire industry thinks about safety. Whether those changes actually happen is another question."</p>
+      <p>You think about what you've seen: a system that worked, on paper, but failed in practice because the people and institutions operating it were not prepared for reality. The commission will render its judgment. Whether the industry and the NRC will truly change — or simply add more paperwork — remains to be seen.</p>`,
+      next: "scene9"
+    },
+    {
+      label: "B",
+      text: "\"I have concerns that go beyond TMI. If this accident revealed these kinds of systemic failures at one plant, what about the other 70 commercial reactors operating in this country? The NRC needs to fundamentally rethink how it regulates nuclear power.\"",
+      consequence: `<p>The staff counsel listens carefully. "That is precisely the question the commission is wrestling with. This wasn't a freak accident at one unlucky plant — it was a systemic failure that exposed vulnerabilities across the entire industry."</p>
+      <p>"If the PORV problem was known from Davis-Besse," you continue, "and the NRC failed to act on it, how many other known problems are sitting in filing cabinets somewhere, waiting for the right combination of failures to produce another TMI — or worse?"</p>
+      <p>"That," he says, "is what keeps us up at night."</p>`,
+      next: "scene9"
+    }
+  ]
+},
+
+// ------ SCENE 9: THE REPORT ------
+scene9: {
+  location: "Washington, D.C.",
+  date: "October 30, 1979",
+  stop: "washington",
+  title: "The Report",
+  narrative: `
+    <p>On October 30, 1979, the Kemeny Commission delivers its report to President Carter. The report is 179 pages, with extensive appendices and technical analyses.</p>
+
+    <p>The commission's principal conclusions:</p>
+
+    <p><strong>1.</strong> The fundamental problems were people-related problems, not equipment problems. While equipment failures initiated the event, it was inadequate operator training, poor emergency procedures, and a complacent regulatory approach that turned a manageable event into a crisis.</p>
+
+    <p><strong>2.</strong> The NRC was a failed regulator. The commission found that the NRC was so focused on licensing and rulemaking that it had neglected the safety of operating reactors. The commission recommended "a total restructuring" of the NRC, or, alternatively, replacing it with a new agency entirely.</p>
+
+    <p><strong>3.</strong> The utility, Metropolitan Edison, did not maintain a "safety culture" adequate for the operation of a nuclear power plant. Operator training was deficient. Emergency procedures were inadequate. And Met Ed's performance during the crisis — including its pattern of providing misleading information — demonstrated a failure of corporate responsibility.</p>
+
+    <p><strong>4.</strong> The nuclear industry as a whole had developed a complacent attitude toward safety, operating on the assumption that a serious accident was so unlikely that it did not require serious preparation. This "mindset" pervaded the NRC, the utilities, and the reactor manufacturers.</p>
+
+    <p><strong>5.</strong> Public health: the commission concluded that the physical health effects of the radiation released during the accident were negligible. However, the <strong>mental health effects</strong> — stress, anxiety, and fear — caused by the crisis and the information chaos were significant and real. The commission recognized that the institutional failures had caused genuine psychological harm to the people of central Pennsylvania.</p>
+
+    <p><strong>6.</strong> Emergency planning for nuclear accidents was grossly inadequate. No level of government — local, state, or federal — was prepared for a nuclear emergency. Communication between the utility, the NRC, and state and local officials was chaotic and ineffective.</p>
+
+    <div class="historical-note">
+      <strong>Historical context:</strong> The Kemeny Commission's report was more damning than many expected. It didn't just identify specific failures — it indicted the entire system. The commission stopped short of recommending a moratorium on nuclear power, but several members publicly expressed doubts about whether the industry and its regulators could be trusted to make the changes needed to operate safely. President Carter accepted the commission's recommendations and ordered reforms at the NRC. Whether those reforms went far enough would be debated for decades.
+    </div>
+
+    <p>You read the report cover to cover. You see your own testimony in the transcripts. You see the evidence you helped gather. You see conclusions that you contributed to.</p>
+
+    <p>The investigation is complete. The recommendations are made. But you know — everyone who worked this case knows — that a report is only as good as the changes it produces. And the question of whether America can safely operate nuclear power plants will be answered not by this commission, but by what happens next.</p>
+  `,
+  prompt: null,
+  choices: [],
+  auto_next: "epilogue"
+},
+
+// ------ EPILOGUE ------
+epilogue: {
+  location: "Epilogue",
+  date: "",
+  stop: "washington",
+  title: "The Questions That Remain",
+  narrative: `
+    <div class="epilogue-section">
+      <p>The Kemeny Commission closed the investigation. History did not.</p>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>The Immediate Aftermath</h3>
+      <p>TMI Unit 2 never operated again. The cleanup took 14 years and cost approximately $1 billion. When remote cameras finally entered the reactor vessel in 1985, they revealed damage far worse than anyone had estimated during the crisis: about 62 tons of fuel — nearly half the core — had melted and pooled at the bottom of the reactor vessel. The vessel itself came within an estimated 30 to 60 minutes of being breached. The Kemeny Commission, the NRC, and Met Ed had all underestimated the severity of the damage at the time.</p>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>Regulatory Reform</h3>
+      <p>TMI forced sweeping changes in nuclear regulation. The NRC overhauled its inspection program, required improved operator training (including realistic simulator exercises), mandated better control room design and instrumentation, and established requirements for emergency planning zones around every nuclear plant. The Institute of Nuclear Power Operations (INPO), an industry self-regulatory body, was created in 1979 as a direct result of TMI. The concept of "safety culture" — the idea that safety must be a core value, not just a set of rules — became central to nuclear regulation worldwide.</p>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>The Health Debate</h3>
+      <p>The official position remains that the radiation released from TMI was too small to cause measurable health effects. Multiple epidemiological studies have reached this conclusion. However, some independent researchers have reported elevated cancer rates in communities downwind of the plant, and residents of the area have long disputed the official health assessments. The debate over TMI's health effects — and over the health effects of low-level radiation exposure in general — continues.</p>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>The End of Nuclear Expansion</h3>
+      <p>Before TMI, the United States had 72 operating commercial nuclear reactors and dozens more under construction or on order. After TMI, not a single new nuclear power plant was ordered in the United States for over 30 years. While TMI alone did not kill the nuclear industry — rising construction costs, the 1986 Chernobyl disaster, and cheap natural gas all played roles — it was the moment that fundamentally changed America's relationship with nuclear power. Public trust, once broken, was never fully restored.</p>
+      <ul>
+        <li><strong>1979:</strong> TMI accident. 140,000 evacuate. Public confidence in nuclear power collapses.</li>
+        <li><strong>1986:</strong> Chernobyl disaster in the Soviet Union. Full core meltdown and containment breach. Global fallout.</li>
+        <li><strong>2011:</strong> Fukushima Daiichi disaster in Japan. Earthquake and tsunami cause triple meltdown.</li>
+        <li><strong>2023–present:</strong> Renewed interest in nuclear power as a zero-carbon energy source. Climate change has reframed the nuclear question: can the world afford NOT to use nuclear power?</li>
+      </ul>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>TMI in the 21st Century</h3>
+      <p>TMI Unit 1 — the undamaged reactor — continued operating until September 2019, when it was shut down due to economic pressures (competition from cheap natural gas). The TMI site is currently being decommissioned. In a twist of history, in 2024, Constellation Energy announced plans to restart TMI Unit 1 to provide clean energy for data centers — a sign of nuclear power's complicated revival in the era of climate change and artificial intelligence.</p>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>What the Investigation Revealed</h3>
+      <p><strong>What the evidence showed:</strong> A mechanical failure (stuck PORV) combined with human error (operators misreading instruments and reducing emergency cooling) caused a partial core meltdown. The damage was far worse than officials admitted during the crisis. Radiation releases were small but the institutional response was disastrous.</p>
+      <p><strong>What remained debated:</strong> The actual health effects on surrounding communities. Whether the NRC's post-TMI reforms were sufficient. Whether the nuclear industry truly changed its safety culture or merely added layers of paperwork. Whether America's decision to essentially stop building nuclear plants after TMI was the right call — or a panicked overreaction that contributed to decades of fossil fuel dependence and climate change.</p>
+      <p><strong>What the investigation revealed about institutions:</strong> TMI exposed catastrophic failures in communication between a private utility, a federal regulator, and state government during a crisis. It revealed that an entire industry had operated on the assumption that a serious accident could not happen — and was completely unprepared when one did. It demonstrated that public trust, once broken by dishonesty and incompetence, is extraordinarily difficult to rebuild.</p>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>Why It Matters</h3>
+      <p>The TMI accident raises questions that go far beyond nuclear power. It asks: <strong>How do institutions respond when technology fails in ways they said it couldn't? Who bears the responsibility when a chain of small failures cascades into a crisis? How do we balance the risks of a technology against its benefits? And when should the public trust experts — and when should they demand better?</strong></p>
+      <p>No matter what choices you made in this simulation, you arrived at the same place: the Kemeny Commission's conclusions. That is what happened historically — the official investigation reached a set of findings about systemic failure. But the questions persist because the underlying tensions — between safety and cost, between transparency and institutional self-protection, between technological optimism and precaution — never go away.</p>
+      <p>Today, as the world confronts climate change and looks again at nuclear power as a potential solution, the lessons of TMI are more relevant than ever. The question TMI asks every generation is this: <em>Can we build institutions trustworthy enough to manage technologies powerful enough to transform — or destroy — the world around us?</em></p>
+    </div>
+
+    <div class="epilogue-section">
+      <h3>Explore the Primary Sources</h3>
+      <p>The full Kemeny Commission report, NRC investigation documents, and related materials are available through the NRC's public document system:</p>
+      <p><a href="https://www.nrc.gov/reading-rm/doc-collections/fact-sheets/3mile-isle.html" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">NRC — Three Mile Island Accident Fact Sheet</a></p>
+      <p><a href="https://www.threemileisland.org/downloads/188.pdf" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">The Kemeny Commission Report (PDF)</a></p>
+      <p><a href="https://www.americanrhetoric.com/speeches/jimmycartertmi.htm" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">President Carter's Address on Three Mile Island</a></p>
+    </div>
+  `,
+  prompt: null,
+  choices: [],
+  isEpilogue: true
+}
+
+};
+
+// ============================================================
+// GAME ENGINE
+// ============================================================
+const introAudio = document.getElementById('intro-audio');
+function playAudio() {
+  // No intro audio for TMI simulation
+}
+
+function playEpilogueAudio() {
+  // No epilogue audio
+}
+
+function stopEpilogueAudio() {
+  const container = document.getElementById('epilogue-audio-container');
+  container.innerHTML = '';
+}
+
+function fadeOutAudio(duration = 2000) {
+  // No audio to fade
+}
+
+function startGame() {
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('map-panel').classList.add('active');
+  document.getElementById('game-container').classList.add('active');
+  document.getElementById('mapbox-container').offsetHeight;
+  initMapbox();
+  renderScene('scene1');
+}
+
+function renderScene(sceneId) {
+  if (state.sceneHistory[state.sceneHistory.length - 1] !== sceneId) {
+    state.sceneHistory.push(sceneId);
+  }
+  state.currentScene = sceneId;
+  const scene = scenes[sceneId];
+  const container = document.getElementById('game-container');
+
+  if (scene.stop) {
+    updateRouteMap(scene.stop, scene.location, scene.date);
+  }
+
+  let html = '<div class="fade-in">';
+
+  if (scene.isEpilogue) {
+    state.reachedEpilogue = true;
+  }
+
+  // Navigation buttons
+  if (sceneId !== 'scene1') {
+    html += `<div class="nav-buttons">`;
+    html += `<button class="back-btn" onclick="goBack()">&larr; Back</button>`;
+    if (state.reachedEpilogue && state.forwardHistory.length > 0) {
+      html += `<button class="back-btn forward-btn" onclick="goForward()">Forward &rarr;</button>`;
+    }
+    html += `</div>`;
+  }
+
+  if (scene.location) {
+    html += `<div class="scene-location">${scene.location}</div>`;
+  }
+  if (scene.date) {
+    html += `<div class="scene-date">${scene.date}</div>`;
+  }
+  if (scene.title) {
+    html += `<div class="scene-title">${scene.title}</div>`;
+  }
+
+  html += `<div class="scene-narrative">${scene.narrative}</div>`;
+
+  if (scene.choices && scene.choices.length > 0) {
+    if (scene.prompt) {
+      html += `<div class="choice-prompt">${scene.prompt}</div>`;
+    }
+    html += '<div class="choices">';
+    scene.choices.forEach((choice, i) => {
+      html += `<button class="choice-btn" onclick="makeChoice('${sceneId}', ${i})">
+        <span class="choice-label">${choice.label}.</span> ${choice.text}
+      </button>`;
+    });
+    html += '</div>';
+  } else if (scene.auto_next) {
+    html += `<button class="continue-btn" onclick="renderScene('${scene.auto_next}')">Continue</button>`;
+  } else if (scene.isEpilogue) {
+    html += `
+    <div class="reflection-section">
+      <h2>Investigation Debrief</h2>
+      <p class="reflection-intro">Answer the following questions thoughtfully and in complete sentences. When you are finished, enter your name and click "Save as PDF" to download your response for submission.</p>
+
+      <div class="name-field">
+        <label for="student-name">Your Name</label>
+        <input type="text" id="student-name" placeholder="First and Last Name">
+      </div>
+
+      <div class="reflection-field">
+        <label>1. The TMI accident was caused by a combination of mechanical failure, human error, and institutional complacency. Which of these factors do you think was most important — and why? Could the accident have been prevented if just one of these factors had been different?</label>
+        <textarea id="reflection-1" placeholder="Write your response here..."></textarea>
+      </div>
+
+      <div class="reflection-field">
+        <label>2. During the TMI crisis, Met Ed minimized the danger, the NRC sent mixed signals, and the state government reversed its own statements. Why do you think institutions — both private companies and government agencies — struggle to communicate honestly during a crisis? What would better crisis communication look like?</label>
+        <textarea id="reflection-2" placeholder="Write your response here..."></textarea>
+      </div>
+
+      <div class="reflection-field">
+        <label>3. No matter what investigative choices you made in this simulation, you arrived at the Kemeny Commission's conclusions: systemic failure across every institution involved. Today, nuclear power is being reconsidered as a solution to climate change. Given what you learned about TMI, do you think the risks of nuclear power are acceptable? What would you need to see from the industry and its regulators to trust that a TMI-level failure won't happen again?</label>
+        <textarea id="reflection-3" placeholder="Write your response here..."></textarea>
+      </div>
+
+      <div class="reflection-actions">
+        <button class="save-pdf-btn" onclick="savePDF()">Save as PDF</button>
+        <button class="restart-btn" onclick="restartGame()">Start Over</button>
+      </div>
+      <p class="pdf-note">Your PDF will include your name, your responses, and the investigative choices you made during the simulation.</p>
+    </div>`;
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function makeChoice(sceneId, choiceIndex) {
+  const scene = scenes[sceneId];
+  const choice = scene.choices[choiceIndex];
+
+  state.decisions.push({ scene: sceneId, choice: choice.label });
+
+  if (choice.effect) choice.effect();
+
+  // Show incident report modal after scene 3 (the control room)
+  if (sceneId === 'scene3') {
+    state._pendingChoice = choice;
+    showReportModal();
+    return;
+  }
+
+  applyChoice(choice);
+}
+
+function applyChoice(choice) {
+  const container = document.getElementById('game-container');
+  const choicesEl = container.querySelector('.choices');
+  if (choicesEl) {
+    let consequenceHtml = `<div class="consequence fade-in">${choice.consequence}</div>`;
+    consequenceHtml += `<button class="continue-btn fade-in" onclick="renderScene('${choice.next}')">Continue</button>`;
+    choicesEl.outerHTML = consequenceHtml;
+
+    const promptEl = container.querySelector('.choice-prompt');
+    if (promptEl) promptEl.style.display = 'none';
+  }
+}
+
+function showReportModal() {
+  document.getElementById('report-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function submitReport() {
+  const signature = document.getElementById('report-inspector-name').value.trim();
+  if (!signature) {
+    alert('You must enter your name to file this report.');
+    document.getElementById('report-inspector-name').focus();
+    return;
+  }
+
+  state.report = {
+    inspectorName: document.getElementById('report-inspector-name').value.trim(),
+    badgeNumber: document.getElementById('report-badge').value.trim(),
+    coreStatus: document.getElementById('report-core-status').value.trim(),
+    radiationReadings: document.getElementById('report-radiation').value.trim(),
+    observations: document.getElementById('report-observations').value.trim(),
+    recommendations: document.getElementById('report-recommendations').value.trim()
+  };
+
+  document.getElementById('report-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+
+  // After filing the report, show the broadcast announcement
+  showBroadcastModal();
+}
+
+function showBroadcastModal() {
+  const iframe = document.getElementById('broadcast-iframe');
+  iframe.src = 'https://www.youtube.com/embed/ifgHHhw_kEA?start=0';
+  document.getElementById('broadcast-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBroadcastModal() {
+  const iframe = document.getElementById('broadcast-iframe');
+  iframe.src = '';
+  document.getElementById('broadcast-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+
+  if (state._pendingChoice) {
+    applyChoice(state._pendingChoice);
+    state._pendingChoice = null;
+  }
+}
+
+function goBack() {
+  if (state.sceneHistory.length > 1) {
+    const currentScene = state.sceneHistory.pop();
+    state.forwardHistory.push(currentScene);
+    const prevScene = state.sceneHistory[state.sceneHistory.length - 1];
+    renderScene(prevScene);
+  }
+}
+
+function goForward() {
+  if (state.forwardHistory.length > 0) {
+    const nextScene = state.forwardHistory.pop();
+    state.sceneHistory.push(nextScene);
+    renderScene(nextScene);
+  }
+}
+
+function openEvidenceModal() {
+  document.getElementById('evidence-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEvidenceModal() {
+  document.getElementById('evidence-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function restartGame() {
+  stopEpilogueAudio();
+
+  state.currentScene = null;
+  state.approachChoice = null;
+  state.decisions = [];
+  state.visitedStops = [];
+  state.sceneHistory = [];
+  state.forwardHistory = [];
+  state.reachedEpilogue = false;
+  state.report = null;
+
+  document.getElementById('map-panel').classList.remove('active');
+  document.getElementById('game-container').classList.remove('active');
+  document.getElementById('game-container').innerHTML = '';
+  document.getElementById('title-screen').style.display = 'flex';
+
+  Object.values(mapboxMarkers).forEach(({ element }) => {
+    element.classList.remove('visited', 'current');
+  });
+  Object.values(mapboxDangerMarkers).forEach(({ element }) => {
+    element.classList.remove('visible');
+  });
+  document.getElementById('callout-location').textContent = '';
+  document.getElementById('callout-date').textContent = '';
+  if (mapboxMap) {
+    mapboxMap.flyTo({ center: [-76.73, 40.17], zoom: 10.5, speed: 1.5 });
+  }
+
+  window.scrollTo({ top: 0 });
+}
+
+// ============================================================
+// PDF GENERATION
+// ============================================================
+function savePDF() {
+  const name = document.getElementById('student-name').value.trim();
+  const r1 = document.getElementById('reflection-1').value.trim();
+  const r2 = document.getElementById('reflection-2').value.trim();
+  const r3 = document.getElementById('reflection-3').value.trim();
+
+  if (!name) {
+    alert('Please enter your name before saving.');
+    document.getElementById('student-name').focus();
+    return;
+  }
+
+  if (!r1 || !r2 || !r3) {
+    alert('Please answer all three reflection questions before saving.');
+    return;
+  }
+
+  const choiceLabels = {
+    scene1: 'Scene 1 — The Call',
+    scene3: 'Scene 3 — The Control Room',
+    scene4: 'Scene 4 — Conflicting Signals',
+    scene5: 'Scene 5 — The Hydrogen Bubble',
+    scene7: 'Scene 7 — The Investigation',
+    scene8: 'Scene 8 — Kemeny Commission'
+  };
+
+  let choicesHtml = '';
+  state.decisions.forEach(d => {
+    const label = choiceLabels[d.scene] || d.scene;
+    choicesHtml += `<tr><td style="padding:4px 12px 4px 0;font-weight:600;white-space:nowrap">${label}</td><td style="padding:4px 0">Choice ${d.choice}</td></tr>`;
+  });
+
+  if (state.approachChoice) {
+    choicesHtml += `<tr><td style="padding:4px 12px 4px 0;font-weight:600">Initial Focus</td><td style="padding:4px 0">${state.approachChoice === 'controlroom' ? 'Reactor Status Assessment' : 'Radiation Monitoring'}</td></tr>`;
+  }
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+<title>TMI Investigation Debrief — ${name}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Source Sans Pro', Arial, sans-serif;
+    color: #1a1a1a;
+    padding: 0.5in 0.75in;
+    line-height: 1.6;
+    font-size: 11pt;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #1a2a4a;
+  }
+  .header h1 {
+    font-size: 20pt;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #1a2a4a;
+    margin-bottom: 2px;
+  }
+  .header .sub {
+    font-size: 10pt;
+    color: #c47a00;
+    font-weight: 600;
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 10pt;
+  }
+  .meta-label { font-weight: 700; color: #1a2a4a; }
+  h2 {
+    font-size: 13pt;
+    color: #1a2a4a;
+    margin: 20px 0 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ddd;
+  }
+  .question { margin-bottom: 18px; }
+  .question .q-label { font-weight: 700; font-size: 10pt; color: #1a2a4a; margin-bottom: 4px; }
+  .question .q-text { font-size: 10pt; margin-bottom: 6px; color: #444; font-style: italic; }
+  .question .answer { font-size: 11pt; line-height: 1.7; padding: 8px 0; white-space: pre-wrap; }
+  table { font-size: 10pt; border-collapse: collapse; }
+  .footer {
+    margin-top: 30px;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+    font-size: 8pt;
+    color: #999;
+    text-align: center;
+  }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Three Mile Island: March 1979</h1>
+  <div class="sub">Investigation Debrief</div>
+</div>
+<div class="meta">
+  <div><span class="meta-label">Student:</span> ${name}</div>
+  <div><span class="meta-label">Date:</span> ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+</div>
+<h2>Investigation Choices</h2>
+<table>${choicesHtml}</table>
+
+${state.report ? `
+<h2>Preliminary Assessment Report</h2>
+<div style="font-size:10pt;line-height:1.6;padding:12px;border:1px solid #ddd;background:#faf8f3;margin-bottom:16px">
+  <p><strong>Inspector:</strong> ${state.report.inspectorName} &nbsp;&nbsp; <strong>Badge:</strong> ${state.report.badgeNumber || 'N/A'}</p>
+  <p><strong>Core Status Assessment:</strong> ${state.report.coreStatus || 'N/A'}</p>
+  <p><strong>Radiation Readings:</strong> ${state.report.radiationReadings || 'N/A'}</p>
+  ${state.report.observations ? `<p><strong>Observations:</strong> ${state.report.observations}</p>` : ''}
+  ${state.report.recommendations ? `<p><strong>Recommendations:</strong> ${state.report.recommendations}</p>` : ''}
+</div>
+` : ''}
+
+<h2>Reflection Questions</h2>
+<div class="question">
+  <div class="q-label">Question 1</div>
+  <div class="q-text">The TMI accident was caused by a combination of mechanical failure, human error, and institutional complacency. Which factor was most important, and could the accident have been prevented?</div>
+  <div class="answer">${r1}</div>
+</div>
+<div class="question">
+  <div class="q-label">Question 2</div>
+  <div class="q-text">Why do institutions struggle to communicate honestly during a crisis? What would better crisis communication look like?</div>
+  <div class="answer">${r2}</div>
+</div>
+<div class="question">
+  <div class="q-label">Question 3</div>
+  <div class="q-text">Given what you learned about TMI, do you think the risks of nuclear power are acceptable? What would you need to trust that a TMI-level failure won't happen again?</div>
+  <div class="answer">${r3}</div>
+</div>
+<div class="footer">
+  Three Mile Island: March 1979 — Historical Simulation for U.S. History
+</div>
+</body>
+</html>`);
+
+  printWindow.document.close();
+  setTimeout(() => { printWindow.print(); }, 600);
+}
+</script>
+
+<!-- Incident Assessment Report Modal -->
+<div class="report-overlay" id="report-overlay">
+  <div class="report-modal">
+    <h2>Preliminary Assessment Report</h2>
+    <div class="report-subtitle">U.S. Nuclear Regulatory Commission — Incident Response</div>
+    <div class="report-classification">CLASSIFICATION: PRIORITY — IMMEDIATE ACTION REQUIRED</div>
+
+    <div class="report-intro">
+      Following your initial assessment of TMI Unit 2, all NRC inspectors on-site are required to file a preliminary assessment report documenting their observations. Complete this form to the best of your ability. Accuracy is critical — this document will become part of the official investigation record and will inform decisions about public protective actions.
+      <br><br><em style="font-size:0.85em;color:#888;">Note: This is an educational simulation. However, NRC inspectors were required to file written assessments during the TMI crisis. These reports became key documents in the subsequent investigations.</em>
+    </div>
+
+    <div class="report-field">
+      <label for="report-inspector-name">Inspector Name</label>
+      <input type="text" id="report-inspector-name" placeholder="Your full name">
+    </div>
+
+    <div class="report-field">
+      <label for="report-badge">NRC Badge / ID Number</label>
+      <input type="text" id="report-badge" placeholder="Assign yourself a badge number">
+    </div>
+
+    <div class="report-field">
+      <label for="report-core-status">What is your assessment of the current reactor core status?</label>
+      <textarea id="report-core-status" placeholder="Based on what you've observed in the control room, describe the condition of the reactor core (e.g., 'fuel damage suspected,' 'core cooling restored,' 'situation uncertain')..."></textarea>
+    </div>
+
+    <div class="report-field">
+      <label for="report-radiation">What radiation readings have you observed or been told about?</label>
+      <textarea id="report-radiation" placeholder="Describe radiation levels inside containment, in the auxiliary building, and at the site perimeter. Note any readings that concern you..."></textarea>
+    </div>
+
+    <div class="report-field">
+      <label for="report-observations">Describe what you observed in the control room and at the plant.</label>
+      <textarea id="report-observations" placeholder="Include details about the operators' condition, the alarm status, the information you received from Met Ed, and anything that concerns you about the response..."></textarea>
+    </div>
+
+    <div class="report-field">
+      <label for="report-recommendations">What immediate actions do you recommend?</label>
+      <textarea id="report-recommendations" placeholder="Should cooling be increased? Should radiation monitoring be expanded? Should the public be notified? What do you recommend the NRC do next?"></textarea>
+    </div>
+
+    <div class="legal-text">
+      I certify that the information provided in this report is accurate and complete to the best of my knowledge and observation. I understand that this document will be entered into the official investigation record and may be reviewed by the investigating commission.
+    </div>
+
+    <button class="report-submit-btn" onclick="submitReport()">File Report</button>
+  </div>
+</div>
+
+<!-- News Broadcast Modal -->
+<div class="broadcast-overlay" id="broadcast-overlay">
+  <div class="broadcast-modal">
+    <h2>Special News Report</h2>
+    <div class="broadcast-dateline">March 28, 1979</div>
+    <p class="broadcast-subtitle">News coverage of the Three Mile Island nuclear accident as it unfolded. The confusing, often contradictory reports shown here mirror the information chaos that defined the crisis.</p>
+    <div class="broadcast-frame">
+      <iframe src="" id="broadcast-iframe" allowfullscreen allow="fullscreen; autoplay"></iframe>
+    </div>
+    <button class="broadcast-close-btn" onclick="closeBroadcastModal()">Continue</button>
+  </div>
+</div>
+
+<!-- Evidence Modal -->
+<div class="evidence-overlay" id="evidence-overlay" onclick="if(event.target===this)closeEvidenceModal()">
+  <div class="evidence-modal">
+    <h2>Key Technical Evidence</h2>
+    <p style="text-align:center;font-style:italic;color:#666;margin-bottom:1.2rem">Technical evidence examined during the investigation</p>
+
+    <h3>The Stuck PORV — The Initiating Failure</h3>
+    <p>The pilot-operated relief valve (PORV) on the pressurizer opened automatically when pressure rose after the feedwater trip — exactly as designed. But it failed to close when pressure dropped. For 2 hours and 22 minutes, reactor coolant drained through the stuck-open valve. The control room had no direct indicator of the valve's actual position — only a light showing that the close signal had been sent.</p>
+
+    <h3>The Davis-Besse Precedent</h3>
+    <p>In September 1977, the Davis-Besse nuclear plant in Ohio experienced a nearly identical event: a feedwater transient followed by a stuck-open PORV. Operators at Davis-Besse also initially misdiagnosed the situation. A Babcock & Wilcox engineer wrote an internal memo warning that operators could make this mistake. The memo never reached TMI's operators or the NRC's enforcement staff.</p>
+
+    <h3>The Hydrogen Bubble</h3>
+    <p>When the Zircaloy fuel cladding reacted with steam at extreme temperatures, it produced approximately 1,000 cubic feet of hydrogen gas. This hydrogen collected at the top of the reactor vessel. For several days, officials feared it could mix with oxygen and explode. The fear was eventually determined to be unfounded — the chemistry inside the vessel could not produce a flammable mixture — but the hydrogen bubble became the defining terror of the crisis.</p>
+
+    <h3>The Core Damage — Revealed in 1985</h3>
+    <p>When remote cameras finally entered the reactor vessel in 1985, they revealed that approximately 62 tons of fuel — about half the core — had melted. Molten fuel had flowed to the bottom of the reactor vessel, forming a mass of solidified material. The reactor vessel came within 30–60 minutes of being breached. This damage was far worse than anyone estimated during the crisis.</p>
+
+    <button class="evidence-close-btn" onclick="closeEvidenceModal()">Close</button>
+  </div>
+</div>
+
+</body>
+</html>
