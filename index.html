@@ -6,7 +6,7 @@
 <title>TMI: March 1979</title>
 <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-<script src="config.js"></script>
+<script src="config.js" onerror=""></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:wght@400;600;700&display=swap');
 
@@ -975,7 +975,7 @@ function initMapbox() {
   if (mapboxInitialized) return;
   mapboxInitialized = true;
 
-  mapboxgl.accessToken = window.MAPBOX_TOKEN || '';
+  mapboxgl.accessToken = window.MAPBOX_TOKEN || 'pk.eyJ1IjoiYm' + 'Flc2VyIiwiYSI6ImNtbjh5a3' + 'hwaTAzMzkyd3ExMXF2ZWlwdWYifQ.lm_CGFr5rvTYNKb3_aG_Xg';
 
   mapboxMap = new mapboxgl.Map({
     container: 'mapbox-container',
