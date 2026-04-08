@@ -766,7 +766,7 @@
   .broadcast-modal .broadcast-frame {
     position: relative;
     width: 100%;
-    padding-bottom: 56.3%;
+    padding-bottom: 56.3%; /* 16:9 aspect ratio */
     margin: 0 auto;
     background: #000;
     border-radius: 4px;
@@ -1856,7 +1856,7 @@ function submitReport() {
 
 function showBroadcastModal() {
   const iframe = document.getElementById('broadcast-iframe');
-  iframe.src = 'https://www.youtube.com/embed/ifgHHhw_kEA?start=0';
+  iframe.src = 'https://www.cbsnews.com/video/march-28-1979-three-mile-island-nuclear-power-plant-accident/';
   document.getElementById('broadcast-overlay').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -2140,7 +2140,7 @@ ${state.report ? `
   <div class="broadcast-modal">
     <h2>Special News Report</h2>
     <div class="broadcast-dateline">March 28, 1979</div>
-    <p class="broadcast-subtitle">News coverage of the Three Mile Island nuclear accident as it unfolded. The confusing, often contradictory reports shown here mirror the information chaos that defined the crisis.</p>
+    <p class="broadcast-subtitle">CBS Evening News coverage from March 28, 1979 — the day of the accident. The confusing, often contradictory reports shown here mirror the information chaos that defined the crisis.</p>
     <div class="broadcast-frame">
       <iframe src="" id="broadcast-iframe" allowfullscreen allow="fullscreen; autoplay"></iframe>
     </div>
