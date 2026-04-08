@@ -42,7 +42,8 @@
     justify-content: center;
     text-align: center;
     padding: 2rem;
-    background: linear-gradient(180deg, #0a0c10 0%, #141820 40%, #1a1e2e 100%);
+    background: linear-gradient(180deg, rgba(10,12,16,0.85) 0%, rgba(20,24,32,0.88) 40%, rgba(26,30,46,0.92) 100%),
+                url('TMIcoolingtowers.jpg') center center / cover no-repeat;
     color: #eceae4;
   }
 
@@ -1104,6 +1105,11 @@ scene1: {
   stop: "nrc_kop",
   title: "The Call",
   narrative: `
+    <figure class="scene-photo">
+      <img src="NRCoffice.jpg" alt="NRC Region I Office, King of Prussia, Pennsylvania">
+      <figcaption>The NRC Region I field office in King of Prussia, Pennsylvania — your duty station on the morning of March 28, 1979.</figcaption>
+    </figure>
+
     <p>You are a reactor inspector with the <span class="vocab-term" data-def="The Nuclear Regulatory Commission (NRC) is an independent agency of the U.S. federal government responsible for regulating commercial nuclear power plants and other uses of nuclear materials. It was established in 1975 as a successor to the Atomic Energy Commission.">Nuclear Regulatory Commission</span>, stationed at the Region I field office in King of Prussia, Pennsylvania. Your phone rings at 7:15 a.m.</p>
 
     <p>It's the NRC Operations Center in Bethesda, Maryland. There has been an incident at <span class="vocab-term" data-def="Three Mile Island is a 3.3-mile-long island in the Susquehanna River near Harrisburg, Pennsylvania. The Three Mile Island Nuclear Generating Station housed two pressurized water reactors: TMI-1 (operational since 1974) and TMI-2 (operational since December 1978).">Three Mile Island</span>, a nuclear power plant located on an island in the Susquehanna River, about ten miles south of Harrisburg. TMI Unit 2 — a <span class="vocab-term" data-def="A pressurized water reactor (PWR) is a type of nuclear reactor that uses ordinary water under high pressure as both a coolant and a moderator. The water in the primary loop is heated by the reactor core, then transfers that heat to a secondary loop through a steam generator to produce electricity.">pressurized water reactor</span> that has been operational for only three months — has declared a <span class="vocab-term" data-def="A site emergency is the second-highest emergency classification at a nuclear power plant (below a general emergency). It indicates that events are in progress or have occurred that involve actual or likely major failures of plant functions needed for protection of the public.">site emergency</span>.</p>
@@ -1146,6 +1152,11 @@ scene2: {
   stop: "tmi",
   title: "The Island",
   narrative: `
+    <figure class="scene-photo">
+      <img src="pic_three_mile_island_jf2009_1000px.jpg" alt="Aerial view of Three Mile Island nuclear power plant">
+      <figcaption>Aerial view of Three Mile Island nuclear generating station on the Susquehanna River. The four cooling towers — two for each unit — dominate the island.</figcaption>
+    </figure>
+
     <p>You cross the bridge onto Three Mile Island and see the plant for the first time under these conditions. Four massive <span class="vocab-term" data-def="Cooling towers are large, hyperbolic (hourglass-shaped) concrete structures used to cool the water in a power plant's secondary cooling system. Despite their ominous appearance, the 'steam' rising from them is simply water vapor — not radiation. TMI had four cooling towers, two for each unit.">cooling towers</span> dominate the landscape, two for each of the plant's two units. A plume of steam rises from the towers of Unit 1, which is operating normally. Unit 2's towers are quiet. That's your first clue that something is seriously wrong — Unit 2 is not generating power.</p>
 
     <p>The plant entrance is already chaotic. Met Ed employees, state police, and other NRC inspectors are arriving. Radiation monitoring teams are setting up equipment around the plant perimeter. You flash your NRC credentials and are directed to the Unit 2 observation center.</p>
@@ -1174,6 +1185,11 @@ scene3: {
   stop: "controlroom",
   title: "The Control Room",
   narrative: `
+    <figure class="scene-photo">
+      <img src="aip.brightspotcdn.jpg" alt="TMI Unit 2 control room during the crisis">
+      <figcaption>Operators and officials crowd the TMI Unit 2 control room during the accident. The "STAY BEHIND LINES" sign is visible above the instrument panels.</figcaption>
+    </figure>
+
     <p>You enter the Unit 2 control room. It is a scene of controlled chaos. Dozens of people are crowded into a space designed for a handful of operators — shift supervisors, Met Ed engineers, NRC staff, and Babcock & Wilcox technical representatives. Alarm panels that normally show a few indicator lights are lit up like Christmas trees. Over 100 alarms are sounding simultaneously. The operators look shell-shocked.</p>
 
     <p>You begin piecing together what happened.</p>
@@ -1185,6 +1201,11 @@ scene3: {
     <p>As pressure rose, the <span class="vocab-term" data-def="The pilot-operated relief valve (PORV) sits on top of the pressurizer — a tall, cylindrical vessel that maintains the correct pressure in the primary coolant system. The PORV opens automatically when pressure exceeds approximately 2,255 psi, venting steam to relieve pressure. It should close again when pressure drops below the set point.">PORV</span> on top of the pressurizer opened automatically, venting steam to relieve the pressure. That was correct — exactly what it's designed to do. But when the pressure dropped below the set point, <strong>the PORV failed to close</strong>.</p>
 
     <p>A stuck-open PORV meant that reactor coolant was now streaming out through the valve, through the drain pipes, and into the <span class="vocab-term" data-def="The reactor coolant drain tank collects any water or steam discharged from the PORV and other relief valves. During the TMI accident, so much coolant poured into this tank that it overflowed, spilling hundreds of thousands of gallons of highly radioactive water onto the floor of the containment building.">reactor coolant drain tank</span> in the containment building. The reactor's primary system was bleeding out — a <span class="vocab-term" data-def="A Loss of Coolant Accident (LOCA) occurs when the reactor's primary coolant system loses water, either through a pipe break or, as at TMI, through a stuck-open valve. Without sufficient coolant, the reactor core can overheat, leading to fuel damage and potentially a meltdown.">loss of coolant accident</span>.</p>
+
+    <figure class="scene-photo">
+      <img src="dacian-falx-tmi.jpg" alt="3D rendering of a nuclear power plant control room">
+      <figcaption>A reconstruction of the TMI Unit 2 control room layout — hundreds of switches, gauges, and indicator lights that operators had to interpret under extreme pressure.</figcaption>
+    </figure>
 
     <p>Here is where the human error compounded the mechanical failure:</p>
 
@@ -1240,6 +1261,11 @@ scene4: {
     return "Three Mile Island / Middletown, Pennsylvania";
   },
   _controlroomNarrative: `
+    <figure class="scene-photo">
+      <img src="apn19790228001_wide-b400a8e9cd58b31e4a0bc1b3caaf30006479c1b4.webp" alt="Press gathered at the Three Mile Island Observation Center">
+      <figcaption>Reporters and camera crews swarm the Three Mile Island Observation Center as officials deliver updates from the balcony above. The media frenzy had begun.</figcaption>
+    </figure>
+
     <p>By the afternoon of March 28, the crisis at TMI has become a national story. News crews are arriving in Middletown and Harrisburg. But the information flowing to the public is confused, contradictory, and often wrong.</p>
 
     <p>Met Ed holds a press conference. The company's spokesperson tells reporters: <strong>"There was a small release of radiation to the environment. Everything is under control. There is no danger to public health and safety."</strong></p>
@@ -1252,6 +1278,11 @@ scene4: {
       <strong>Historical context:</strong> The information chaos during the TMI crisis was one of its most damaging aspects. Met Ed consistently downplayed the severity of the accident. The NRC had difficulty getting accurate information from the plant. The state of Pennsylvania was caught between Met Ed's reassurances and the NRC's uncertainty. Lieutenant Governor William Scranton initially told the press there was no danger, based on Met Ed's assurances — then had to retract his statement hours later when he learned the situation was more serious. This pattern of conflicting information would define the entire crisis and shatter public trust.
     </div>
 
+    <figure class="scene-photo">
+      <img src="Gov-Thornburgh-and-Lt-Gov-Scranton-March-30-1979-e1552585932651-1920x1032.jpg" alt="Governor Thornburgh and Lieutenant Governor Scranton at a press conference">
+      <figcaption>Governor Richard Thornburgh (left) and Lieutenant Governor William Scranton III at a press conference during the TMI crisis, March 30, 1979. Scranton had initially told the public there was no danger — then had to retract his statement.</figcaption>
+    </figure>
+
     <p>Governor Richard Thornburgh calls the NRC directly. He needs to know: should he order an evacuation? The people of Middletown, Harrisburg, and the surrounding communities are watching the news and beginning to panic. Parents are calling schools. Some families are already leaving on their own.</p>
 
     <p>At the NRC, the answer is: <strong>we don't know yet</strong>. The technical staff is still trying to determine the extent of core damage and whether radioactive releases will increase. The instruments inside the reactor aren't giving clear readings. The plant staff seems overwhelmed.</p>
@@ -1261,6 +1292,11 @@ scene4: {
     <p>The word spreads through the NRC and the plant staff like a shockwave. Hydrogen. Inside the reactor vessel. If that hydrogen ignites or explodes, it could breach the reactor vessel. It could breach the containment building. It could release the full inventory of radioactive material into the atmosphere.</p>
   `,
   _monitoringNarrative: `
+    <figure class="scene-photo">
+      <img src="apn19790328006-46fc63d9b94938bd73c2687b2cd01012ad84d274.webp" alt="An official surrounded by reporters and microphones during the TMI crisis">
+      <figcaption>An official faces a wall of microphones and cameras as reporters demand answers during the TMI crisis. The hunger for information far outpaced the ability of any institution to provide it.</figcaption>
+    </figure>
+
     <p>Your radiation monitoring work confirms what you feared: this is not a minor event. Over the course of March 28, radioactive gases continue to vent from the auxiliary building. Monitoring teams around the plant's perimeter detect elevated radiation levels. Readings are inconsistent — the wind shifts, the releases are intermittent, and different monitoring stations report different numbers.</p>
 
     <p>The public information situation is disastrous. Met Ed tells the press everything is under control. But reporters are picking up on the conflicting signals: state officials who initially echoed Met Ed's reassurances are now backtracking. Lieutenant Governor William Scranton told the press in the morning that there was no danger — then, after learning the situation was more serious, had to reverse his statement in the afternoon.</p>
@@ -1270,6 +1306,11 @@ scene4: {
     <div class="historical-note">
       <strong>Historical context:</strong> The radiation releases from TMI were a subject of intense debate during and after the crisis. The official estimates concluded that the total radiation released was about 15 curies of iodine-131, with an average dose to people living within a 10-mile radius of about 8 millirem — less than a chest X-ray. However, critics argued that monitoring was inadequate (many monitors were not functioning or were positioned incorrectly), that releases may have been higher than officially reported, and that the health effects of low-level radiation exposure were (and remain) scientifically contested.
     </div>
+
+    <figure class="scene-photo">
+      <img src="Gov-Thornburgh-and-Lt-Gov-Scranton-March-30-1979-e1552585932651-1920x1032.jpg" alt="Governor Thornburgh and Lieutenant Governor Scranton at a press conference">
+      <figcaption>Governor Thornburgh and Lt. Governor Scranton face the press. Scranton's reversal — from "no danger" to "more complex than the utility has led us to believe" — epitomized the information chaos.</figcaption>
+    </figure>
 
     <p>Governor Richard Thornburgh is in an impossible position. He needs to decide whether to order an evacuation of the communities surrounding TMI. An unnecessary evacuation could cause panic, injuries, and economic devastation. A failure to evacuate, if conditions worsen, could expose hundreds of thousands of people to dangerous radiation. He turns to the NRC for guidance. The NRC tells him: <strong>we're still assessing</strong>.</p>
 
@@ -1306,6 +1347,11 @@ scene5: {
   stop: "harrisburg",
   title: "The Hydrogen Bubble",
   narrative: `
+    <figure class="scene-photo">
+      <img src="AP_615100730923-1880x1231.jpg" alt="Crowds gather near Three Mile Island to watch the cooling towers">
+      <figcaption>Anxious residents and onlookers gather near Three Mile Island as the crisis deepens. For many, this was the first time they truly understood what was happening just miles from their homes.</figcaption>
+    </figure>
+
     <p>March 30, 1979 is the day the Three Mile Island crisis nearly becomes a full-blown disaster — not because of what happens at the reactor, but because of what people think is about to happen.</p>
 
     <p>NRC Chairman <strong>Joseph Hendrie</strong> and Governor <strong>Richard Thornburgh</strong> are on the phone, trying to coordinate a response. The conversation, later released as part of the investigation, reveals just how lost both men are:</p>
@@ -1323,6 +1369,11 @@ scene5: {
     <p>Other engineers argue that the conditions inside the reactor vessel cannot produce enough free oxygen for an explosion. The water chemistry makes it virtually impossible. They are correct — but in the heat of the crisis, certainty is in short supply.</p>
 
     <p>The media seizes on the hydrogen bubble story. Headlines scream about a potential nuclear explosion. Some reports conflate a hydrogen explosion (a chemical reaction) with a nuclear explosion (a completely different and physically impossible scenario for a commercial reactor), further confusing the public. The movie <em>The China Syndrome</em>, a thriller about a nuclear plant accident, had been released in theaters just twelve days before the TMI accident. Fiction and reality are blurring.</p>
+
+    <figure class="scene-photo">
+      <img src="Three-MileIslandEvacPlan-1979-001.jpg" alt="TMI evacuation plan showing 5-mile, 10-mile, and 20-mile radius zones">
+      <figcaption>The TMI evacuation zone map. Governor Thornburgh advised pregnant women and preschool children within the 5-mile radius to evacuate. An estimated 140,000 people ultimately fled the area voluntarily.</figcaption>
+    </figure>
 
     <p>Governor Thornburgh's advisory triggers a voluntary mass exodus. Over the next few days, an estimated <strong>140,000 people</strong> flee the area around Three Mile Island. Roads are jammed. Hotels within a hundred-mile radius fill up. Schools close. The Hershey sports arena, 15 miles away, is designated as an evacuation center.</p>
 
@@ -1356,9 +1407,19 @@ scene6: {
   stop: "hershey",
   title: "The President Arrives",
   narrative: `
+    <figure class="scene-photo">
+      <img src="OZ3XLZPPKNBZHC25MHAAFJ3VUI.jpg" alt="President Jimmy Carter tours the TMI control room">
+      <figcaption>President Jimmy Carter (center), a former Navy nuclear engineer, tours the TMI Unit 2 control room on April 1, 1979. His visit was a calculated risk designed to reassure a terrified public.</figcaption>
+    </figure>
+
     <p>On April 1, 1979 — four days into the crisis — President <strong>Jimmy Carter</strong> arrives at Three Mile Island. Carter, a former Navy nuclear engineer who had studied under Admiral Hyman Rickover, is one of the few political leaders in the country who actually understands nuclear reactor technology. He has come to see the situation for himself and to reassure the public.</p>
 
     <p>The president, accompanied by First Lady Rosalynn Carter, tours the TMI control room. He is briefed by plant operators and NRC officials. He wears yellow rubber booties over his shoes as a radiation precaution. Photographs of the visit are broadcast worldwide.</p>
+
+    <figure class="scene-photo">
+      <img src="images.jpg" alt="President Carter and First Lady Rosalynn Carter in the TMI control room">
+      <figcaption>President Carter and First Lady Rosalynn Carter receive a briefing inside the TMI control room. Carter's background in nuclear engineering gave him a technical understanding that few other officials possessed.</figcaption>
+    </figure>
 
     <div class="historical-note">
       <strong>Historical context:</strong> President Carter's visit was a calculated risk. If conditions at the plant worsened during his visit, it would have been a political and public safety catastrophe. But Carter believed his presence would send a powerful signal. His background in nuclear engineering — he had helped clean up a partial meltdown at a Canadian reactor (NRX at Chalk River) in 1952 while serving in the Navy — gave him a technical understanding that few other officials possessed. After his visit, public panic began to subside. The "blind leading the blind" phase of the crisis was ending.
@@ -1367,6 +1428,11 @@ scene6: {
     <p>Over the following days, the hydrogen bubble gradually dissipates. The feared explosion never materializes. Engineers establish stable cooling of the damaged core. Radiation releases remain low. By April 9, the crisis is effectively over. Governor Thornburgh lifts the evacuation advisory.</p>
 
     <p>The evacuees begin returning home. The immediate emergency has passed. But the questions are just beginning.</p>
+
+    <figure class="scene-photo">
+      <img src="download.jpg" alt="Radiation monitoring near Three Mile Island">
+      <figcaption>Personnel conduct radiation monitoring near the plant perimeter. Dosimeters and portable detectors became ubiquitous in the days following the accident.</figcaption>
+    </figure>
 
     <p><strong>What exactly happened inside the reactor?</strong> No one can look inside the sealed vessel. It will take years and remotely operated cameras before the full extent of the damage is known. (When they finally look inside in 1985, they will discover that approximately <strong>half the core — about 62 tons of fuel — had melted</strong>. The damage was far worse than anyone estimated during the crisis. Molten fuel had pooled at the bottom of the reactor vessel, coming within an hour of breaching it.)</p>
 
@@ -1389,6 +1455,11 @@ scene7: {
     <p>In the weeks following the crisis, President Carter establishes the <span class="vocab-term" data-def="The President's Commission on the Accident at Three Mile Island, commonly known as the Kemeny Commission after its chairman, John G. Kemeny, president of Dartmouth College. Established by Executive Order 12130 on April 11, 1979, the 12-member commission was tasked with conducting a comprehensive investigation of the accident and making recommendations to prevent future incidents.">Kemeny Commission</span> to investigate the accident. Chaired by John G. Kemeny, president of Dartmouth College, the 12-member commission includes scientists, engineers, environmentalists, and community representatives. A separate NRC investigation, the Rogovin Report, is also launched.</p>
 
     <p>As an NRC inspector who was on the ground during the crisis, you are deeply involved in the investigation. The work is painstaking: reconstructing the accident minute by minute, interviewing operators, reviewing instrument data, examining the design of the reactor and its safety systems.</p>
+
+    <figure class="scene-photo">
+      <img src="axxsvq9yh0g71.png" alt="View inside the damaged TMI-2 reactor vessel, photographed in 1985">
+      <figcaption>The damaged TMI-2 reactor core, photographed by remote camera in 1985. Approximately 62 tons of fuel — nearly half the core — had melted. This image revealed damage far worse than anyone estimated during the crisis.</figcaption>
+    </figure>
 
     <p>The picture that emerges is damning — and it goes far beyond a single stuck valve.</p>
 
@@ -1481,6 +1552,11 @@ scene9: {
   stop: "washington",
   title: "The Report",
   narrative: `
+    <figure class="scene-photo">
+      <img src="mceclip11-6369b626f226f.png" alt="Exterior view of a nuclear power plant containment building">
+      <figcaption>A nuclear plant containment building — the last line of defense between a damaged reactor core and the outside world. At TMI, the containment held. The question was whether it would continue to hold.</figcaption>
+    </figure>
+
     <p>On October 30, 1979, the Kemeny Commission delivers its report to President Carter. The report is 179 pages, with extensive appendices and technical analyses.</p>
 
     <p>The commission's principal conclusions:</p>
@@ -1536,6 +1612,11 @@ epilogue: {
       <p>The official position remains that the radiation released from TMI was too small to cause measurable health effects. Multiple epidemiological studies have reached this conclusion. However, some independent researchers have reported elevated cancer rates in communities downwind of the plant, and residents of the area have long disputed the official health assessments. The debate over TMI's health effects — and over the health effects of low-level radiation exposure in general — continues.</p>
     </div>
 
+    <figure class="scene-photo">
+      <img src="download-1.jpg" alt="A playground swing set stands empty with a TMI cooling tower looming in the background">
+      <figcaption>An empty playground near Three Mile Island, with a cooling tower looming in the background. For the communities surrounding TMI, the accident cast a long shadow over everyday life.</figcaption>
+    </figure>
+
     <div class="epilogue-section">
       <h3>The End of Nuclear Expansion</h3>
       <p>Before TMI, the United States had 72 operating commercial nuclear reactors and dozens more under construction or on order. After TMI, not a single new nuclear power plant was ordered in the United States for over 30 years. While TMI alone did not kill the nuclear industry — rising construction costs, the 1986 Chernobyl disaster, and cheap natural gas all played roles — it was the moment that fundamentally changed America's relationship with nuclear power. Public trust, once broken, was never fully restored.</p>
@@ -1545,10 +1626,19 @@ epilogue: {
         <li><strong>2011:</strong> Fukushima Daiichi disaster in Japan. Earthquake and tsunami cause triple meltdown.</li>
         <li><strong>2023–present:</strong> Renewed interest in nuclear power as a zero-carbon energy source. Climate change has reframed the nuclear question: can the world afford NOT to use nuclear power?</li>
       </ul>
+
+      <figure class="scene-photo">
+        <img src="graphic-illustr-three-mile-island-chernobyl-and-fukushima.webp" alt="Infographic comparing Three Mile Island, Chernobyl, and Fukushima nuclear accidents">
+        <figcaption>TMI in context: a comparison of the three major commercial nuclear accidents — Three Mile Island (1979), Chernobyl (1986), and Fukushima Dai-ichi (2011). TMI released far less radiation, but its impact on public trust was enormous.</figcaption>
+      </figure>
     </div>
 
     <div class="epilogue-section">
       <h3>TMI in the 21st Century</h3>
+      <figure class="scene-photo">
+        <img src="TMIcoolingtowers.jpg" alt="Three Mile Island cooling towers reflected in a puddle on an overcast day">
+        <figcaption>Three Mile Island's cooling towers stand reflected in a puddle on a gray Pennsylvania day — a quiet monument to the accident that changed America's relationship with nuclear power.</figcaption>
+      </figure>
       <p>TMI Unit 1 — the undamaged reactor — continued operating until September 2019, when it was shut down due to economic pressures (competition from cheap natural gas). The TMI site is currently being decommissioned. In a twist of history, in 2024, Constellation Energy announced plans to restart TMI Unit 1 to provide clean energy for data centers — a sign of nuclear power's complicated revival in the era of climate change and artificial intelligence.</p>
     </div>
 
@@ -1569,6 +1659,7 @@ epilogue: {
     <div class="epilogue-section">
       <h3>Explore the Primary Sources</h3>
       <p>The full Kemeny Commission report, NRC investigation documents, and related materials are available through the NRC's public document system:</p>
+      <p><a href="TMI accident report.pdf" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">NRC — Three Mile Island Accident Knowledge Management Digest (PDF)</a></p>
       <p><a href="https://www.nrc.gov/reading-rm/doc-collections/fact-sheets/3mile-isle.html" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">NRC — Three Mile Island Accident Fact Sheet</a></p>
       <p><a href="https://www.threemileisland.org/downloads/188.pdf" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">The Kemeny Commission Report (PDF)</a></p>
       <p><a href="https://www.americanrhetoric.com/speeches/jimmycartertmi.htm" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">President Carter's Address on Three Mile Island</a></p>
@@ -2064,6 +2155,10 @@ ${state.report ? `
     <p style="text-align:center;font-style:italic;color:#666;margin-bottom:1.2rem">Technical evidence examined during the investigation</p>
 
     <h3>The Stuck PORV — The Initiating Failure</h3>
+    <figure class="scene-photo" style="margin-top:0.5rem">
+      <img src="rcp.gif" alt="Westinghouse Reactor Coolant Pump technical diagram">
+      <figcaption>Technical diagram of a Westinghouse Reactor Coolant Pump — a critical component of the primary cooling system. Understanding these systems was essential to diagnosing what went wrong at TMI.</figcaption>
+    </figure>
     <p>The pilot-operated relief valve (PORV) on the pressurizer opened automatically when pressure rose after the feedwater trip — exactly as designed. But it failed to close when pressure dropped. For 2 hours and 22 minutes, reactor coolant drained through the stuck-open valve. The control room had no direct indicator of the valve's actual position — only a light showing that the close signal had been sent.</p>
 
     <h3>The Davis-Besse Precedent</h3>
@@ -2073,6 +2168,10 @@ ${state.report ? `
     <p>When the Zircaloy fuel cladding reacted with steam at extreme temperatures, it produced approximately 1,000 cubic feet of hydrogen gas. This hydrogen collected at the top of the reactor vessel. For several days, officials feared it could mix with oxygen and explode. The fear was eventually determined to be unfounded — the chemistry inside the vessel could not produce a flammable mixture — but the hydrogen bubble became the defining terror of the crisis.</p>
 
     <h3>The Core Damage — Revealed in 1985</h3>
+    <figure class="scene-photo" style="margin-top:0.5rem">
+      <img src="3-s2.0-B9780128223048000012-f10-01-9780128223048.jpg" alt="Technical diagram of a severe nuclear reactor accident showing core meltdown, hydrogen combustion, and containment breach scenarios">
+      <figcaption>Diagram of a severe reactor accident scenario: core meltdown, hydrogen combustion, containment breach, and radioactive release pathways. TMI came perilously close to several of these outcomes.</figcaption>
+    </figure>
     <p>When remote cameras finally entered the reactor vessel in 1985, they revealed that approximately 62 tons of fuel — about half the core — had melted. Molten fuel had flowed to the bottom of the reactor vessel, forming a mass of solidified material. The reactor vessel came within 30–60 minutes of being breached. This damage was far worse than anyone estimated during the crisis.</p>
 
     <button class="evidence-close-btn" onclick="closeEvidenceModal()">Close</button>
