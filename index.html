@@ -1663,6 +1663,12 @@ epilogue: {
       <p><a href="https://www.nrc.gov/reading-rm/doc-collections/fact-sheets/3mile-isle.html" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">NRC — Three Mile Island Accident Fact Sheet</a></p>
       <p><a href="https://www.threemileisland.org/downloads/188.pdf" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">The Kemeny Commission Report (PDF)</a></p>
       <p><a href="https://www.americanrhetoric.com/speeches/jimmycartertmi.htm" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; font-weight: bold;">President Carter's Address on Three Mile Island</a></p>
+
+      <h4 style="margin-top:1.5rem; margin-bottom:0.5rem; color: var(--blue);">PBS Documentary: Meltdown at Three Mile Island</h4>
+      <p style="font-size:0.95rem; margin-bottom:0.75rem; color: var(--text-light); font-style:italic;">The full PBS <em>American Experience</em> documentary featuring original news broadcasts, interviews with operators and officials, and a minute-by-minute reconstruction of the crisis.</p>
+      <div style="position:relative; width:100%; padding-bottom:56.3%; background:#000; border-radius:4px; overflow:hidden;">
+        <iframe src="https://archive.org/embed/the-american-experience-meltdown-at-three-milse-island" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
+      </div>
     </div>
   `,
   prompt: null,
@@ -1856,7 +1862,7 @@ function submitReport() {
 
 function showBroadcastModal() {
   const iframe = document.getElementById('broadcast-iframe');
-  iframe.src = 'https://archive.org/embed/the-american-experience-meltdown-at-three-milse-island';
+  iframe.src = 'https://www.youtube.com/embed/ifgHHhw_kEA?start=0';
   document.getElementById('broadcast-overlay').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -2138,9 +2144,9 @@ ${state.report ? `
 <!-- News Broadcast Modal -->
 <div class="broadcast-overlay" id="broadcast-overlay">
   <div class="broadcast-modal">
-    <h2>Documentary Evidence</h2>
-    <div class="broadcast-dateline">PBS — The American Experience</div>
-    <p class="broadcast-subtitle"><em>Meltdown at Three Mile Island</em> — a PBS documentary featuring original news broadcasts, interviews with operators and officials, and a minute-by-minute reconstruction of the crisis you just walked through.</p>
+    <h2>Special News Report</h2>
+    <div class="broadcast-dateline">March 28, 1979</div>
+    <p class="broadcast-subtitle">News coverage of the Three Mile Island nuclear accident as it unfolded. The confusing, often contradictory reports shown here mirror the information chaos that defined the crisis.</p>
     <div class="broadcast-frame">
       <iframe src="" id="broadcast-iframe" allowfullscreen allow="fullscreen; autoplay"></iframe>
     </div>
