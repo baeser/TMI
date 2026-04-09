@@ -1856,7 +1856,7 @@ function submitReport() {
 
 function showBroadcastModal() {
   const iframe = document.getElementById('broadcast-iframe');
-  iframe.src = 'https://www.cbsnews.com/video/march-28-1979-three-mile-island-nuclear-power-plant-accident/';
+  iframe.src = 'https://archive.org/embed/the-american-experience-meltdown-at-three-milse-island';
   document.getElementById('broadcast-overlay').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -2138,9 +2138,9 @@ ${state.report ? `
 <!-- News Broadcast Modal -->
 <div class="broadcast-overlay" id="broadcast-overlay">
   <div class="broadcast-modal">
-    <h2>Special News Report</h2>
-    <div class="broadcast-dateline">March 28, 1979</div>
-    <p class="broadcast-subtitle">CBS Evening News coverage from March 28, 1979 — the day of the accident. The confusing, often contradictory reports shown here mirror the information chaos that defined the crisis.</p>
+    <h2>Documentary Evidence</h2>
+    <div class="broadcast-dateline">PBS — The American Experience</div>
+    <p class="broadcast-subtitle"><em>Meltdown at Three Mile Island</em> — a PBS documentary featuring original news broadcasts, interviews with operators and officials, and a minute-by-minute reconstruction of the crisis you just walked through.</p>
     <div class="broadcast-frame">
       <iframe src="" id="broadcast-iframe" allowfullscreen allow="fullscreen; autoplay"></iframe>
     </div>
