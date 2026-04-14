@@ -881,6 +881,32 @@
 </head>
 <body>
 
+<!-- ===== ACCESS GATE ===== -->
+<div id="access-gate" style="position:fixed;inset:0;z-index:99999;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Times New Roman',serif;">
+  <div style="text-align:center;max-width:420px;padding:2rem;">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.2em;color:#888;margin-bottom:1.5rem;">Classroom Simulation</div>
+    <h1 style="font-size:2rem;color:#e0e0e0;margin:0 0 0.5rem 0;">Three Mile Island</h1>
+    <div style="font-size:1rem;color:#999;margin-bottom:2rem;">March 28, 1979</div>
+    <p style="color:#aaa;font-size:0.9rem;line-height:1.6;margin-bottom:2rem;">Enter the access code provided by your teacher to begin.</p>
+    <input id="gate-code" type="text" placeholder="Access Code" autocomplete="off" style="width:100%;box-sizing:border-box;padding:0.75rem 1rem;font-size:1rem;font-family:inherit;background:#1a1a1a;border:1px solid #333;color:#e0e0e0;border-radius:6px;text-align:center;letter-spacing:0.1em;outline:none;" onkeydown="if(event.key==='Enter')checkGate()">
+    <button onclick="checkGate()" style="margin-top:1rem;padding:0.75rem 2.5rem;font-size:0.95rem;font-family:inherit;background:#2a1a0a;color:#d4a030;border:1px solid #4a3a1a;border-radius:6px;cursor:pointer;letter-spacing:0.05em;transition:background 0.2s;">Enter Simulation</button>
+    <div id="gate-error" style="color:#cc4444;font-size:0.85rem;margin-top:1rem;min-height:1.2em;"></div>
+  </div>
+</div>
+<script>
+(function(){
+  const HASH='c424893f5d33cde9df8d2f0f2ab90c2d6a58a1f86a9bf8c232abeaaf839536d8';
+  if(sessionStorage.getItem('sim_access')==='granted'){document.getElementById('access-gate').style.display='none';}
+  window.checkGate=async function(){
+    const code=document.getElementById('gate-code').value.trim().toLowerCase();
+    const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(code));
+    const hash=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    if(hash===HASH){sessionStorage.setItem('sim_access','granted');document.getElementById('access-gate').style.display='none';}
+    else{document.getElementById('gate-error').textContent='Incorrect code. Please try again.';}
+  };
+})();
+</script>
+
 <!-- ===== TITLE SCREEN ===== -->
 <div id="title-screen">
   <h1>Three Mile Island</h1>
